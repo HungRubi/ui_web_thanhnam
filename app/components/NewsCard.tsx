@@ -1,18 +1,56 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
 import { FC } from "react";
+import ImageWithFallback from "./ImageWithFallback";
+
+// Helper function để xử lý image URL
+const getImageUrl = (imagePath?: string): string => {
+  if (!imagePath || imagePath.trim() === "") {
+    return "/news/1.jpg";
+  }
+  
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    try {
+      new URL(imagePath);
+      return imagePath;
+    } catch {
+      return "/news/1.jpg";
+    }
+  }
+  
+  if (imagePath.startsWith("/upload/")) {
+    return "/news/1.jpg";
+  }
+  
+  if (imagePath.startsWith("/")) {
+    return imagePath;
+  }
+  
+  return `/${imagePath}`;
+};
 
 type NewsCardProps = {
   title: string;
   img: string;
   subTitle: string;
   link: string;
-  isAuthor: boolean
-  className?: string,
-  isSub?: string
+  isAuthor: boolean;
+  className?: string;
+  isSub?: string;
+  formatDate?: string;
 };
 
-const NewsCard: FC<NewsCardProps> = ({title, img, subTitle, link, isAuthor, className, isSub}) => {
+const NewsCard: FC<NewsCardProps> = ({
+  title, 
+  img, 
+  subTitle, 
+  link, 
+  isAuthor, 
+  className, 
+  isSub,
+  formatDate
+}) => {
     return (
       <div className={`border border-gray-200 rounded-lg px-3 bg-white shadow-sm hover:shadow-md transition 
       w-[calc(100%/6-6px)] relative ${className}`}>
@@ -20,23 +58,25 @@ const NewsCard: FC<NewsCardProps> = ({title, img, subTitle, link, isAuthor, clas
           href={link}
           className="w-full h-[180px] flex items-center justify-center mb-3"
         >
-          <Image
-            src={img}
+          <ImageWithFallback
+            src={getImageUrl(img)}
             alt={title}
             width={300}
             height={300}
             className="object-contain max-h-full"
+            fallback="/news/1.jpg"
           />
         </Link>
         <div className={`flex items-center justify-start gap-x-2.5 ${isAuthor ? "block" : "hidden"}`}>
-          <Image
-            width={300}
-            height={300}
+          <ImageWithFallback
+            width={40}
+            height={40}
             alt="logo"
             src={"/images/icon.png"}
             className="w-10 h-10 object-cover"
+            fallback="/images/icon.png"
           />
-          <p className="text-sm text-gray-400">2 days ago</p>
+          <p className="text-sm text-gray-400">{formatDate || "2 days ago"}</p>
         </div>
         <Link 
           href={link}

@@ -1,9 +1,66 @@
+"use client";
+
 import Header from "@/app/components/Header"
 import Link from "next/link"
-import Image from "next/image"
 import Footer from "@/app/components/Footer"
 import NewsCard from "@/app/components/NewsCard"
+import ImageWithFallback from "@/app/components/ImageWithFallback"
+import { useNewsById, useNews } from "@/hooks/useNews"
+import { useParams } from "next/navigation"
+
+// Helper function để xử lý image URL
+const getImageUrl = (imagePath?: string): string => {
+  if (!imagePath || imagePath.trim() === "") {
+    return "/news/1.jpg";
+  }
+  
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    try {
+      new URL(imagePath);
+      return imagePath;
+    } catch {
+      return "/news/1.jpg";
+    }
+  }
+  
+  if (imagePath.startsWith("/upload/")) {
+    return "/news/1.jpg";
+  }
+  
+  if (imagePath.startsWith("/")) {
+    return imagePath;
+  }
+  
+  return `/${imagePath}`;
+};
+
 const DetailNew = () => {
+    const params = useParams();
+    const id = params?.slug as string;
+    const { news: currentNews, loading, error } = useNewsById(id);
+    const { news: allNews } = useNews();
+    
+    // Lấy danh sách news phổ biến (loại bỏ bài hiện tại)
+    const popularNews = allNews
+      .filter(item => item.duyet === "Yes" && item._id !== id)
+      .slice(0, 3);
+
+    if (loading) {
+        return (
+            <div className="w-full min-h-screen flex items-center justify-center">
+                <p className="text-gray-500">Đang tải bài viết...</p>
+            </div>
+        );
+    }
+
+    if (error || !currentNews) {
+        return (
+            <div className="w-full min-h-screen flex items-center justify-center">
+                <p className="text-red-500">Lỗi: {error || "Không tìm thấy bài viết"}</p>
+            </div>
+        );
+    }
+
     return (
         <>
             <Header/>
@@ -15,11 +72,11 @@ const DetailNew = () => {
                             <span className="text-[#019a04]"> / </span>
                         </Link>
                         <Link href={"/blog"} className="text-[#019a04]">
-                            Article about Interesting Enhancement Products for Women
+                            {currentNews.name}
                             <span className="text-[#019a04]"> / </span>
                         </Link>
                         <span className="text-gray-500">
-                            Article about Interesting Enhancement Products for Women
+                            {currentNews.name}
                         </span>
                     </div>
                 </div>
@@ -27,65 +84,50 @@ const DetailNew = () => {
                 <div className="container mt-4 px-3 grid grid-cols-1 md:grid-cols-4 mx-auto gap-x-4">
                     <div className="col-span-3 bg-white p-5">
                         <h1 className="mb-4 text-[28px] font-[540] text-gray-800 line-clamp-2">
-                            In-Depth Review of Atk.store – ATK Gaming Gear: Is It Safe to Buy?
+                            {currentNews.name}
                         </h1>
                         <div className={`flex items-center justify-start gap-x-2.5 my-5`}>
-                            <Image
-                                width={300}
-                                height={300}
+                            <ImageWithFallback
+                                width={40}
+                                height={40}
                                 alt="logo"
                                 src={"/images/icon.png"}
                                 className="w-10 h-10 object-cover"
+                                fallback="/images/icon.png"
                             />
-                            <p className="text-sm text-gray-400">2 days ago</p>
+                            <p className="text-sm text-gray-400">
+                                {currentNews.lastUpdate || currentNews.formatDate || "2 days ago"}
+                            </p>
                         </div>
-                        <p className="leading-8 text-gray-700">
-                            Detailed Content:
-                            ATK is the online store for ATK Gaming Gear, a brand focused on high-performance gaming 
-                            accessories such as mice, mechanical keyboards, and other peripherals designed for gamers. 
-                            The website promotes a modern gaming lifestyle and emphasizes product quality and precision.
-                            Featured Products: The store offers a variety of gaming mice, hall-effect keyboards, and 
-                            accessory kits tailored for professional and casual gamers. Products are designed for comfort, 
-                            speed, and accuracy. User Reviews: Many users appreciate the design, lightweight feel, and 
-                            performance of ATK products. However, several buyers report issues such as delayed shipping, 
-                            missing confirmation emails, or unresponsive customer support. Some customers have received 
-                            defective products or experienced problems like double-clicking mice shortly after delivery.
-                            Trust & Reliability: The store shows mixed reliability ratings. Some users successfully receive 
-                            their orders and are satisfied
-                        </p>
+                        {currentNews.content && (
+                          <div 
+                            className="leading-8 text-gray-700"
+                            dangerouslySetInnerHTML={{ __html: currentNews.content }}
+                          />
+                        )}
+                        {!currentNews.content && currentNews.description && (
+                          <p className="leading-8 text-gray-700">
+                            {currentNews.description}
+                          </p>
+                        )}
                     </div>
                     <div className="col-span-1 bg-white flex flex-col gap-y-5 p-2.5">
                         <p className="mb-4 text-[24px] font-[540] text-gray-800 line-clamp-2 p-2.5 ">
                             Popular Blog
                         </p>
-                        <NewsCard
-                            title="Shine of Diamond - The Epitome of Modern Luxury Jewelry Art"
-                            img="/news/1.jpg"
-                            subTitle="Discover Shine of Diamond – a luxury jewelry brand offering exquisite craftsmanship that celebrates elegance, sophistication, and individuality for the modern woman."
-                            link="/blog/test"
+                        {popularNews.map((item) => (
+                          <NewsCard
+                            key={item._id}
+                            title={item.name}
+                            img={item.image || "/news/1.jpg"}
+                            subTitle={item.description || ""}
+                            link={`/blog/${item._id}`}
                             isAuthor={false}
                             className="w-full! border-none! shadow-none!"
                             isSub="hidden"
-                        />
-                        <NewsCard
-                            title="Shine of Diamond - The Epitome of Modern Luxury Jewelry Art"
-                            img="/news/1.jpg"
-                            subTitle="Discover Shine of Diamond – a luxury jewelry brand offering exquisite craftsmanship that celebrates elegance, sophistication, and individuality for the modern woman."
-                            link="/blog/test"
-                            isAuthor={false}
-                            isSub="hidden"
-                            className="w-full! border-none! shadow-none!"
-                        />
-                        <NewsCard
-                            title="Shine of Diamond - The Epitome of Modern Luxury Jewelry Art"
-                            img="/news/1.jpg"
-                            subTitle="Discover Shine of Diamond – a luxury jewelry brand offering exquisite craftsmanship that celebrates elegance, sophistication, and individuality for the modern woman."
-                            link="/blog/test"
-                            isAuthor={false}
-                            isSub="hidden"
-                            className="w-full! border-none! shadow-none!"
-                        />
-                        
+                            formatDate={item.formatDate}
+                          />
+                        ))}
                     </div>
                 </div>
             </section>

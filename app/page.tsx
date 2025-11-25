@@ -2,25 +2,28 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import icons from "@/utils/icons";
-const  { FiSearch } = icons;
 import Link from "next/link";
+import ImageWithFallback from "./components/ImageWithFallback";
 
 import ProductCard from "./components/ProductCard";
 import NewsCard from "./components/NewsCard";
 import Footer from "./components/Footer";
 
 import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import { Autoplay, Pagination } from "swiper/modules";
 import Search from "./components/Search";
 import ListCategories from "./components/ListCategories";
+import GlobalConfigDisplay from "@/components/GlobalConfigDisplay";
+import { useStores } from "@/hooks/useStores";
 
 export default function Home() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const storeSwiperRef = useRef<any>(null);
+  const storeSwiperRef = useRef<SwiperType | null>(null);
+  const { stores: apiStores, loading: storesLoading } = useStores();
+  
   const slides = [
     {
       src: "/slides/1.png",
@@ -48,23 +51,46 @@ export default function Home() {
       href: "https://yeswelder.com/?ref=vytbxsvm",
     }
   ];
-  const stores = [
-  { name: "Simsonn", img: "/store/1.jpg" },
-  { name: "Shine Of Diamond", img: "/store/2.jpg" },
-  { name: "ATK", img: "/store/3.png" },
-  { name: "Superstratum Labs", img: "/store/4.jpg" },
-  { name: "FreeBoy", img: "/store/5.jpg" },
-  { name: "Retevis", img: "/store/6.jpg" },
-  { name: "Nogy", img: "/store/8.jpg" },
-  { name: "Nogy", img: "/store/9.png" },
-  { name: "Nogy", img: "/store/10.jpg" },
-  { name: "Nogy", img: "/store/11.jpg" },
-  { name: "Nogy", img: "/store/12.png" },
-  { name: "Nogy", img: "/store/13.jpg" },
-  { name: "Nogy", img: "/store/14.jpg" },
-  { name: "Nogy", img: "/store/16.jpg" },
-  { name: "Nogy", img: "/store/15.png" },
-];
+  const getImageUrl = (imagePath?: string): string => {
+    // Fallback mặc định nếu không có image path
+    if (!imagePath || imagePath.trim() === "") {
+      return "/store/1.jpg";
+    }
+    
+    // Nếu là absolute URL (http/https), validate và giữ nguyên
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      try {
+        // Validate URL
+        new URL(imagePath);
+        return imagePath;
+      } catch {
+        return "/store/1.jpg";
+      }
+    }
+    
+    if (imagePath.startsWith("/upload/")) {
+      return "/store/1.jpg";
+    }
+    
+    if (imagePath.startsWith("/images/")) {
+      return imagePath;
+    }
+    
+    if (imagePath.startsWith("/")) {
+      return imagePath;
+    }
+    
+    return `/${imagePath}`;
+  };
+
+  const displayStores = apiStores
+    .filter(store => store.duyetbai === "Yes")
+    .sort((a, b) => (a.stt || 999) - (b.stt || 999))
+    .map(store => ({
+      name: store.tenstore,
+      img: getImageUrl(store.image),
+      slug: store.slug,
+    }));
   return (
     <>
       <nav className="pt-2! relative flex items-center justify-center">
@@ -139,30 +165,56 @@ export default function Home() {
               onSlideChange={() => {
                 const s = storeSwiperRef.current;
                 if (!s) return;
-                if (s.isEnd) s.params.autoplay.reverseDirection = true;
-                else if (s.isBeginning) s.params.autoplay.reverseDirection = false;
+                const autoplay = s.params.autoplay;
+                if (autoplay && typeof autoplay === "object") {
+                  if (s.isEnd) {
+                    autoplay.reverseDirection = true;
+                  } else if (s.isBeginning) {
+                    autoplay.reverseDirection = false;
+                  }
+                }
               }}
             >
-              {stores.map((item, index) => (
-                <SwiperSlide key={index}>
-                <Link href={"/store/test"} style={{ textAlign: "center" }}>
-                  <Image
-                    src={item.img}
-                    alt={item.name}
-                    width={10000}
-                    height={10000}
-                  />
-                  <p className="my-2.5">{item.name}</p>
-                </Link>
-              </SwiperSlide>
-              ))}
+              {storesLoading ? (
+                <SwiperSlide>
+                  <div className="flex items-center justify-center h-32">
+                    <p className="text-gray-500">Đang tải...</p>
+                  </div>
+                </SwiperSlide>
+              ) : displayStores.length > 0 ? (
+                displayStores.map((item, index) => {
+                  const isExternalImage = item.img.startsWith("http://") || item.img.startsWith("https://");
+                  return (
+                    <SwiperSlide key={index}>
+                      <Link href={`/store/${item.slug}`} style={{ textAlign: "center" }}>
+                        <ImageWithFallback
+                          src={item.img}
+                          alt={item.name || "Store"}
+                          width={200}
+                          height={200}
+                          className="w-full h-auto object-contain"
+                          fallback="/store/1.jpg"
+                          unoptimized={isExternalImage}
+                        />
+                        <p className="my-2.5">{item.name}</p>
+                      </Link>
+                    </SwiperSlide>
+                  );
+                })
+              ) : (
+                <SwiperSlide>
+                  <div className="flex items-center justify-center h-32">
+                    <p className="text-gray-500">Chưa có store nào</p>
+                  </div>
+                </SwiperSlide>
+              )}
             </Swiper>
           </div>
         </div>
 
         <div className="w-full mt-5">
           <h3 className="pb-2 pt-12 text-[28px]">
-            Popular Store
+            Deals Of Today
             <Link 
               href={"#"}
               className="text-green-500 float-right text-[28px]"
@@ -236,6 +288,9 @@ export default function Home() {
 
         <ListCategories />
       </div>
+
+      {/* Test Global Config - Có thể xóa sau */}
+      <GlobalConfigDisplay />
       
       <div className="w-full">
         <Footer />

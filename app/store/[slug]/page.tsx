@@ -5,9 +5,68 @@ import Search from "../../components/Search"
 import icons from "@/utils/icons";
 import Footer from "@/app/components/Footer";
 import ModalCoupon from "@/app/components/ModalCoupon";
-import { Modal } from "@mui/material";
+import ImageWithFallback from "@/app/components/ImageWithFallback";
+import { useStoreBySlug } from "@/hooks/useStores";
+import { useParams } from "next/navigation";
 const {FaStar} = icons
+
+// Helper function để xử lý và validate image URL
+const getImageUrl = (imagePath?: string): string => {
+  // Fallback mặc định nếu không có image path
+  if (!imagePath || imagePath.trim() === "") {
+    return "/store/1.jpg";
+  }
+  
+  // Nếu là absolute URL (http/https), validate và giữ nguyên
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    try {
+      // Validate URL
+      new URL(imagePath);
+      return imagePath;
+    } catch {
+      // URL không hợp lệ, fallback
+      return "/store/1.jpg";
+    }
+  }
+  
+  // Nếu path bắt đầu bằng /upload/, fallback ngay vì server không có ảnh
+  if (imagePath.startsWith("/upload/")) {
+    return "/store/1.jpg";
+  }
+  
+  // Nếu path bắt đầu bằng /images/, thử load từ public folder
+  if (imagePath.startsWith("/images/")) {
+    return imagePath;
+  }
+  
+  // Nếu là relative path khác, đảm bảo bắt đầu bằng /
+  if (imagePath.startsWith("/")) {
+    return imagePath;
+  }
+  
+  // Nếu không có / ở đầu, thêm vào
+  return `/${imagePath}`;
+};
 export default function Store () {
+    const params = useParams();
+    const slug = params?.slug as string;
+    const { store, loading, error } = useStoreBySlug(slug);
+
+    if (loading) {
+        return (
+            <div className="w-full min-h-screen flex items-center justify-center">
+                <p className="text-gray-500">Đang tải thông tin store...</p>
+            </div>
+        );
+    }
+
+    if (error || !store) {
+        return (
+            <div className="w-full min-h-screen flex items-center justify-center">
+                <p className="text-red-500">Lỗi: {error || "Không tìm thấy store"}</p>
+            </div>
+        );
+    }
     return (
         <>
             <nav className="w-full py-2">
@@ -31,19 +90,20 @@ export default function Store () {
                     <div className="col-span-1">
                         <div className="w-full flex items-center justify-center bg-white flex-col shadow">
                             <div className="h-[150px]">
-                                <Image
-                                    src={"/store/1.jpg"}
+                                <ImageWithFallback
+                                    src={getImageUrl(store.image)}
+                                    alt={store.tenstore}
                                     width={300}
                                     height={300}
-                                    alt="Store"
                                     className="h-full object-cover w-auto"
+                                    fallback="/store/1.jpg"
                                 />
                             </div>
                             <Link 
-                                href={""}
+                                href={`/store/${store.slug}`}
                                 className="text-[#019a04]"
                             >
-                                Amyet
+                                {store.tenstore}
                             </Link>
                             <div className="flex items-center justify-center gap-1.5 mt-2">
                                 <FaStar className="text-yellow-500 text-xl"/>
@@ -78,11 +138,13 @@ export default function Store () {
                     </div>
                     <div className="col-span-3">
                         <h3 className="text-[28px] font-semibold pb-3 leading-7 w-full text-gray-700">
-                            Amyet Coupons and Promo Codes
+                            {store.tenstore} Coupons and Promo Codes
                         </h3>
-                        <div className="mb-6 line-clamp-2 tracking-wide">
-                            Enjoy incredible discounts from Amyet on all your favorite items. For a limited time only.
-                        </div>
+                        {store.motangan && (
+                            <div className="mb-6 line-clamp-2 tracking-wide">
+                                {store.motangan}
+                            </div>
+                        )}
 
                         <div className="mb-2 w-full flex items-center gap-x-2.5">
                             <div className="bg-white text-[#019a04] px-6 py-2 rounded-md font-bold shadow
@@ -155,64 +217,47 @@ export default function Store () {
                             </div>
                         </div>
 
-                        <h2 className="text-2xl text-gray-700 font-semibold mt-10 mb-4">
-                            About store
-                        </h2>
-                        <div className="w-full border border-gray-200 p-4 text-[#555]">
-                            <p className="mb-4 leading-7">
-                                About Us <br />
-                                AmYet is a brand founded in 2023 that focuses on designing, manufacturing, 
-                                and selling high‑quality electric bikes. The company aims to combine performance, 
-                                innovation, and value, helping riders embrace mobility and sustainable travel. 
-                                With a commitment to quality and user experience, 
-                                AmYet builds electric bikes that cater to both daily commute and adventure alike.
-                            </p>
-                        </div>
+                        {store.about && (
+                            <>
+                                <h2 className="text-2xl text-gray-700 font-semibold mt-10 mb-4">
+                                    About store
+                                </h2>
+                                <div className="w-full border border-gray-200 p-4 text-[#555]">
+                                    <div 
+                                        className="mb-4 leading-7"
+                                        dangerouslySetInnerHTML={{ __html: store.about }}
+                                    />
+                                </div>
+                            </>
+                        )}
 
-                        <h2 className="text-2xl text-gray-700 font-semibold mt-10 mb-4">
-                            How to apply Amyet coupon codes
-                        </h2>
-                        <div className="w-full border border-gray-200 p-4 text-[#555]">
-                            <p className="mb-4 leading-7">
-                                How to apply Amyet coupon codes? <br />
-                                Step 1: Find your Amyet Coupons, discount codes on this page or Zibjr and click &quot;GET CODE&quot; 
-                                button to view the code, then click &quot;Copy&quot; and the coupons, discount codes will be copied to your 
-                                phone&quot;s or computer&quot;s clipboard. <br />
-                                Step 2: Go to Amyet then select all items you want to buy and add to shopping cart. When finished 
-                                shopping, go to the Amyet checkout page. <br />
-                                Step 3: During checkout, find the text &quot;Promo Code&quot; or &quot;Discount Code&quot; and 
-                                paste your Amyet coupons, discount codes in step 1 to this box. Click &quot;Apply&quot; and your savings 
-                                for Amyet will be applied.
-                            </p>
-                        </div>
+                        {store.howtoapply && (
+                            <>
+                                <h2 className="text-2xl text-gray-700 font-semibold mt-10 mb-4">
+                                    How to apply {store.tenstore} coupon codes
+                                </h2>
+                                <div className="w-full border border-gray-200 p-4 text-[#555]">
+                                    <div 
+                                        className="mb-4 leading-7"
+                                        dangerouslySetInnerHTML={{ __html: store.howtoapply }}
+                                    />
+                                </div>
+                            </>
+                        )}
 
-                        <h2 className="text-2xl text-gray-700 font-semibold mt-10 mb-4">
-                            Amyet Questions & Answers
-                        </h2>
-                        <div className="w-full border border-gray-200 p-4 text-[#555]">
-                            <p className="leading-7">
-                                Q: Why should I visit Zibjr for Amyet coupons? <br />
-                                A: Zibjr collects the top discounts from Amyet, even at the last minute 
-                                while updating continually to ensure consumer savings. Coupons, promo codes, 
-                                gift cards and many more can also be found on the website.
-                            </p>
-                        </div>
-                        <div className="w-full border border-gray-200 p-4 text-[#555] border-t-0">
-                            <p className="leading-7">
-                                Q: Why should I visit Zibjr for Amyet coupons? <br />
-                                A: Zibjr collects the top discounts from Amyet, even at the last minute 
-                                while updating continually to ensure consumer savings. Coupons, promo codes, 
-                                gift cards and many more can also be found on the website.
-                            </p>
-                        </div>
-                        <div className="w-full border border-gray-200 p-4 text-[#555] border-t-0">
-                            <p className="leading-7">
-                                Q: Why should I visit Zibjr for Amyet coupons? <br />
-                                A: Zibjr collects the top discounts from Amyet, even at the last minute 
-                                while updating continually to ensure consumer savings. Coupons, promo codes, 
-                                gift cards and many more can also be found on the website.
-                            </p>
-                        </div>
+                        {store.faqs && (
+                            <>
+                                <h2 className="text-2xl text-gray-700 font-semibold mt-10 mb-4">
+                                    {store.tenstore} Questions & Answers
+                                </h2>
+                                <div className="w-full border border-gray-200 p-4 text-[#555]">
+                                    <div 
+                                        className="leading-7"
+                                        dangerouslySetInnerHTML={{ __html: store.faqs }}
+                                    />
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
