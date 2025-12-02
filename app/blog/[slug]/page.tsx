@@ -1,49 +1,71 @@
 "use client";
 
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 import Header from "@/app/components/Header"
 import Link from "next/link"
 import Footer from "@/app/components/Footer"
 import NewsCard from "@/app/components/NewsCard"
-import ImageWithFallback from "@/app/components/ImageWithFallback"
 import { useNewsById, useNews } from "@/hooks/useNews"
 import { useParams } from "next/navigation"
 
-// Helper function để xử lý image URL
-const getImageUrl = (imagePath?: string): string => {
-  if (!imagePath || imagePath.trim() === "") {
-    return "/news/1.jpg";
-  }
-  
-  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-    try {
-      new URL(imagePath);
-      return imagePath;
-    } catch {
-      return "/news/1.jpg";
-    }
-  }
-  
-  if (imagePath.startsWith("/upload/")) {
-    return "/news/1.jpg";
-  }
-  
-  if (imagePath.startsWith("/")) {
-    return imagePath;
-  }
-  
-  return `/${imagePath}`;
-};
 
 const DetailNew = () => {
     const params = useParams();
-    const id = params?.slug as string;
-    const { news: currentNews, loading, error } = useNewsById(id);
-    const { news: allNews } = useNews();
+    const slug = params?.slug as string;
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [slugNotFound, setSlugNotFound] = useState(false);
+    const { news: allNews, loading: newsLoading } = useNews();
+    const { news: currentNews, loading, error } = useNewsById(selectedId || undefined, !!selectedId);
+    
+    useEffect(() => {
+        if (!slug || selectedId) return;
+        if (allNews.length === 0) {
+            if (!newsLoading) {
+                setSlugNotFound(true);
+            }
+            return;
+        }
+        
+        const match = allNews.find((item) => item.slug === slug);
+        if (match?._id) {
+            setSelectedId(match._id);
+            setSlugNotFound(false);
+        } else if (!newsLoading) {
+            setSlugNotFound(true);
+        }
+    }, [allNews, slug, selectedId, newsLoading]);
+    
+    const getTimestamp = (item: typeof allNews[number]) => {
+        const dateString = item.updatedAt || item.lastUpdate || item.createdAt || item.formatDate;
+        return dateString ? new Date(dateString).getTime() : 0;
+    };
     
     // Lấy danh sách news phổ biến (loại bỏ bài hiện tại)
-    const popularNews = allNews
-      .filter(item => item.duyet === "Yes" && item._id !== id)
-      .slice(0, 3);
+    const popularNews = useMemo(() => (
+        allNews
+          .filter(item => item.duyet === "Yes" && item.slug !== slug)
+          .sort((a, b) => getTimestamp(b) - getTimestamp(a))
+          .slice(0, 3)
+    ), [allNews, slug]);
+
+    if (!selectedId) {
+        if (newsLoading) {
+            return (
+                <div className="w-full min-h-screen flex items-center justify-center">
+                    <p className="text-gray-500">Đang tải bài viết...</p>
+                </div>
+            );
+        }
+
+        if (slugNotFound) {
+            return (
+                <div className="w-full min-h-screen flex items-center justify-center">
+                    <p className="text-red-500">Không tìm thấy bài viết</p>
+                </div>
+            );
+        }
+    }
 
     if (loading) {
         return (
@@ -87,13 +109,12 @@ const DetailNew = () => {
                             {currentNews.name}
                         </h1>
                         <div className={`flex items-center justify-start gap-x-2.5 my-5`}>
-                            <ImageWithFallback
+                            <Image
                                 width={40}
                                 height={40}
                                 alt="logo"
                                 src={"/images/icon.png"}
                                 className="w-10 h-10 object-cover"
-                                fallback="/images/icon.png"
                             />
                             <p className="text-sm text-gray-400">
                                 {currentNews.lastUpdate || currentNews.formatDate || "2 days ago"}
@@ -121,7 +142,7 @@ const DetailNew = () => {
                             title={item.name}
                             img={item.image || "/news/1.jpg"}
                             subTitle={item.description || ""}
-                            link={`/blog/${item._id}`}
+                            link={`/blog/${item.slug}`}
                             isAuthor={false}
                             className="w-full! border-none! shadow-none!"
                             isSub="hidden"

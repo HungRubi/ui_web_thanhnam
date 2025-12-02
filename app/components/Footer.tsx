@@ -1,10 +1,18 @@
+ "use client";
+
 import Link from "next/link";
 import FacebookIcon from "@/utils/sgv/Facebook";
 import TwitterIcon from "@/utils/sgv/Twitter";
 import InstagramIcon from "@/utils/sgv/Instagram";
 import PinterestIcon from "@/utils/sgv/Pinterest";
+import { useEvents } from "@/hooks/useEvents";
 
 const Footer = () => {
+    const { events, loading, error } = useEvents();
+    const featuredEvents = events
+        .filter((event) => event.hienthi !== false)
+        .slice(0, 6);
+
     return (
         <div className="w-full bg-[#095400] min-h-[265px]">
             <div className="container mx-auto px-3 
@@ -18,39 +26,27 @@ const Footer = () => {
             >
                 <div className="col-span-1 mt-8 mb-4">
                     <h3 className="font-medium text-gray-300 text-sm">
-                        Envent Sales
+                        Event Sales
                     </h3>
                     <ul className="list-none mt-4">
-                        <li className="mb-2">
-                            <Link href="/black_friday" className="text-white hover:text-red-500 transition text-sm">
-                                Black Friday
-                            </Link>
-                        </li>
-                        <li className="mb-2">
-                            <Link href="/christmas" className="text-white hover:text-red-500 transition text-sm">
-                                Christmas
-                            </Link>
-                        </li>
-                        <li className="mb-2">
-                            <Link href="/valentine" className="text-white hover:text-red-500 transition text-sm">
-                                Valentine
-                            </Link>
-                        </li>
-                        <li className="mb-2">
-                            <Link href="/boxing_day" className="text-white hover:text-red-500 transition text-sm">
-                                Boxing Day
-                            </Link>
-                        </li>
-                        <li className="mb-2">
-                            <Link href="/halloween" className="text-white hover:text-red-500 transition text-sm">
-                                Halloween
-                            </Link>
-                        </li>
-                        <li className="mb-2">
-                            <Link href="/thanksgiving" className="text-white hover:text-red-500 transition text-sm">
-                                Thanksgiving
-                            </Link>
-                        </li>
+                        {loading ? (
+                            <li className="mb-2 text-sm text-gray-200">Đang tải event...</li>
+                        ) : error ? (
+                            <li className="mb-2 text-sm text-red-200">Lỗi: {error}</li>
+                        ) : featuredEvents.length > 0 ? (
+                            featuredEvents.map((event) => (
+                                <li key={event._id || event.slug} className="mb-2">
+                                    <Link
+                                        href={`/${event.slug}`}
+                                        className="text-white hover:text-red-500 transition text-sm"
+                                    >
+                                        {event.tendanhmuc}
+                                    </Link>
+                                </li>
+                            ))
+                        ) : (
+                            <li className="mb-2 text-sm text-gray-200">Chưa có event nào</li>
+                        )}
                     </ul>
                 </div>
 

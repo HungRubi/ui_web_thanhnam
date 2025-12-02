@@ -256,3 +256,135 @@ export const fetchNewsById = async (id: string): Promise<News> => {
   }
 };
 
+// Event interfaces
+export interface Event {
+  _id?: string;
+  tendanhmuc: string;
+  slug: string;
+  sapxep?: number;
+  danhmuccha?: string;
+  image?: string;
+  hienthi?: boolean;
+  hienthitrangchu?: boolean;
+  mota?: string;
+  metatitle?: string;
+  metakeywords?: string;
+  metadescription?: string;
+  formatDate?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Response khi get danh sách event
+export interface EventResponse {
+  eventFormat?: Event[];
+  searchEvent?: Event[];
+  searchType: boolean;
+}
+
+// Response khi get chi tiết event theo id
+export interface EventDetail {
+  event: Event;
+  [key: string]: any;
+}
+
+export const fetchEvents = async (searchQuery?: string): Promise<EventResponse> => {
+  try {
+    const url = searchQuery
+      ? `/api/event?timkiem=${encodeURIComponent(searchQuery)}`
+      : "/api/event";
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: ApiResponse<EventResponse> = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    throw error;
+  }
+};
+
+export const fetchEventById = async (id: string): Promise<EventDetail> => {
+  try {
+    const response = await fetch(`/api/event/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: EventDetail = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error fetching event by id:", error);
+    throw error;
+  }
+};
+
+// Deal interfaces
+export interface Deal {
+  _id?: string;
+  name: string;
+  slug: string;
+  danhmuc?: string;
+  originalPrice?: number;
+  price?: number;
+  url?: string;
+  image?: string;
+  duyet: "Yes" | "No";
+  description?: string;
+  metatitle?: string;
+  metadescription?: string;
+  metakeywords?: string;
+  formatDate?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface DealResponse {
+  dealFormat?: Deal[];
+  searchDeal?: Deal[];
+  totalPage?: number;
+  searchType: boolean;
+}
+
+export const fetchDeals = async (searchQuery?: string): Promise<DealResponse> => {
+  try {
+    const url = searchQuery
+      ? `/api/deal?timkiem=${encodeURIComponent(searchQuery)}`
+      : "/api/deal";
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: ApiResponse<DealResponse> = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error("Error fetching deals:", error);
+    throw error;
+  }
+};

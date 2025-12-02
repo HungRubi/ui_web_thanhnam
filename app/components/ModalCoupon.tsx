@@ -47,7 +47,7 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn}) => {
                     >
                         <p className="mr-5">zsdf</p> 
                         <div className="absolute text-white transition-all rounded-md get_code 
-                            h-10 flex items-center w-[180px] top-[-2px] justify-center right-1 hover:right-6 duration-500 " 
+                            h-10 flex items-center w-[180px] -top-0.5 justify-center right-1 hover:right-6 duration-500 " 
                         > 
                             GET CODE
                         </div> 

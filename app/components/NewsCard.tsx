@@ -1,34 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { FC } from "react";
-import ImageWithFallback from "./ImageWithFallback";
-
-// Helper function để xử lý image URL
-const getImageUrl = (imagePath?: string): string => {
-  if (!imagePath || imagePath.trim() === "") {
-    return "/news/1.jpg";
-  }
-  
-  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-    try {
-      new URL(imagePath);
-      return imagePath;
-    } catch {
-      return "/news/1.jpg";
-    }
-  }
-  
-  if (imagePath.startsWith("/upload/")) {
-    return "/news/1.jpg";
-  }
-  
-  if (imagePath.startsWith("/")) {
-    return imagePath;
-  }
-  
-  return `/${imagePath}`;
-};
+import { resolveImageUrl } from "@/utils/image";
 
 type NewsCardProps = {
   title: string;
@@ -51,30 +26,31 @@ const NewsCard: FC<NewsCardProps> = ({
   isSub,
   formatDate
 }) => {
+    const imageSrc = resolveImageUrl(img, { fallback: "/news/1.jpg" });
+    const isExternalImage = imageSrc.startsWith("http://") || imageSrc.startsWith("https://");
     return (
       <div className={`border border-gray-200 rounded-lg px-3 bg-white shadow-sm hover:shadow-md transition 
-      w-[calc(100%/6-6px)] relative ${className}`}>
+      w-[calc(100%/5-6px)] relative ${className} min-w-[300px]`}>
         <Link 
           href={link}
           className="w-full h-[180px] flex items-center justify-center mb-3"
         >
-          <ImageWithFallback
-            src={getImageUrl(img)}
+          <Image
+            src={imageSrc}
             alt={title}
             width={300}
             height={300}
             className="object-contain max-h-full"
-            fallback="/news/1.jpg"
+            unoptimized={isExternalImage}
           />
         </Link>
         <div className={`flex items-center justify-start gap-x-2.5 ${isAuthor ? "block" : "hidden"}`}>
-          <ImageWithFallback
+          <Image
             width={40}
             height={40}
             alt="logo"
             src={"/images/icon.png"}
             className="w-10 h-10 object-cover"
-            fallback="/images/icon.png"
           />
           <p className="text-sm text-gray-400">{formatDate || "2 days ago"}</p>
         </div>

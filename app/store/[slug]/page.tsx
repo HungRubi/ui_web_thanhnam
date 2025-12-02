@@ -5,47 +5,14 @@ import Search from "../../components/Search"
 import icons from "@/utils/icons";
 import Footer from "@/app/components/Footer";
 import ModalCoupon from "@/app/components/ModalCoupon";
-import ImageWithFallback from "@/app/components/ImageWithFallback";
 import { useStoreBySlug } from "@/hooks/useStores";
 import { useParams } from "next/navigation";
+import { resolveImageUrl } from "@/utils/image";
 const {FaStar} = icons
 
 // Helper function để xử lý và validate image URL
 const getImageUrl = (imagePath?: string): string => {
-  // Fallback mặc định nếu không có image path
-  if (!imagePath || imagePath.trim() === "") {
-    return "/store/1.jpg";
-  }
-  
-  // Nếu là absolute URL (http/https), validate và giữ nguyên
-  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-    try {
-      // Validate URL
-      new URL(imagePath);
-      return imagePath;
-    } catch {
-      // URL không hợp lệ, fallback
-      return "/store/1.jpg";
-    }
-  }
-  
-  // Nếu path bắt đầu bằng /upload/, fallback ngay vì server không có ảnh
-  if (imagePath.startsWith("/upload/")) {
-    return "/store/1.jpg";
-  }
-  
-  // Nếu path bắt đầu bằng /images/, thử load từ public folder
-  if (imagePath.startsWith("/images/")) {
-    return imagePath;
-  }
-  
-  // Nếu là relative path khác, đảm bảo bắt đầu bằng /
-  if (imagePath.startsWith("/")) {
-    return imagePath;
-  }
-  
-  // Nếu không có / ở đầu, thêm vào
-  return `/${imagePath}`;
+  return resolveImageUrl(imagePath, { fallback: "/store/1.jpg" });
 };
 export default function Store () {
     const params = useParams();
@@ -67,6 +34,8 @@ export default function Store () {
             </div>
         );
     }
+    const storeImageSrc = getImageUrl(store.image);
+    const isExternalImage = storeImageSrc.startsWith("http://") || storeImageSrc.startsWith("https://");
     return (
         <>
             <nav className="w-full py-2">
@@ -90,13 +59,13 @@ export default function Store () {
                     <div className="col-span-1">
                         <div className="w-full flex items-center justify-center bg-white flex-col shadow">
                             <div className="h-[150px]">
-                                <ImageWithFallback
-                                    src={getImageUrl(store.image)}
+                                <Image
+                                    src={storeImageSrc}
                                     alt={store.tenstore}
                                     width={300}
                                     height={300}
                                     className="h-full object-cover w-auto"
-                                    fallback="/store/1.jpg"
+                                    unoptimized={isExternalImage}
                                 />
                             </div>
                             <Link 

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useRef } from "react";
 import Link from "next/link";
-import ImageWithFallback from "./components/ImageWithFallback";
 
 import ProductCard from "./components/ProductCard";
 import NewsCard from "./components/NewsCard";
@@ -19,10 +18,15 @@ import Search from "./components/Search";
 import ListCategories from "./components/ListCategories";
 import GlobalConfigDisplay from "@/components/GlobalConfigDisplay";
 import { useStores } from "@/hooks/useStores";
+import { useNews } from "@/hooks/useNews";
+import { useDeals } from "@/hooks/useDeals";
+import { resolveImageUrl } from "@/utils/image";
 
 export default function Home() {
   const storeSwiperRef = useRef<SwiperType | null>(null);
   const { stores: apiStores, loading: storesLoading } = useStores();
+  const { news: apiNews, loading: newsLoading, error: newsError } = useNews();
+  const { deals: apiDeals, loading: dealsLoading, error: dealsError } = useDeals();
   
   const slides = [
     {
@@ -51,36 +55,11 @@ export default function Home() {
       href: "https://yeswelder.com/?ref=vytbxsvm",
     }
   ];
-  const getImageUrl = (imagePath?: string): string => {
-    // Fallback mặc định nếu không có image path
-    if (!imagePath || imagePath.trim() === "") {
-      return "/store/1.jpg";
-    }
-    
-    // Nếu là absolute URL (http/https), validate và giữ nguyên
-    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-      try {
-        // Validate URL
-        new URL(imagePath);
-        return imagePath;
-      } catch {
-        return "/store/1.jpg";
-      }
-    }
-    
-    if (imagePath.startsWith("/upload/")) {
-      return "/store/1.jpg";
-    }
-    
-    if (imagePath.startsWith("/images/")) {
-      return imagePath;
-    }
-    
-    if (imagePath.startsWith("/")) {
-      return imagePath;
-    }
-    
-    return `/${imagePath}`;
+  const getImageUrl = (imagePath?: string, fallback: string = "/store/1.jpg"): string =>
+    resolveImageUrl(imagePath, { fallback });
+  const handleDealClick = (url?: string) => {
+    if (!url) return;
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const displayStores = apiStores
@@ -91,6 +70,12 @@ export default function Home() {
       img: getImageUrl(store.image),
       slug: store.slug,
     }));
+  const displayNews = apiNews
+    .filter(newsItem => newsItem.duyet === "Yes")
+    .slice(0, 6);
+  const displayDeals = apiDeals
+    .filter((deal) => deal.duyet === "Yes")
+    .slice(0, 6);
   return (
     <>
       <nav className="pt-2! relative flex items-center justify-center">
@@ -187,13 +172,12 @@ export default function Home() {
                   return (
                     <SwiperSlide key={index}>
                       <Link href={`/store/${item.slug}`} style={{ textAlign: "center" }}>
-                        <ImageWithFallback
+                        <Image
                           src={item.img}
                           alt={item.name || "Store"}
                           width={200}
                           height={200}
                           className="w-full h-auto object-contain"
-                          fallback="/store/1.jpg"
                           unoptimized={isExternalImage}
                         />
                         <p className="my-2.5">{item.name}</p>
@@ -222,68 +206,77 @@ export default function Home() {
               Deals
             </Link>
           </h3>
-          <div className="w-full flex items-center gap-2.5">
-            <ProductCard
-              title="Firstess DP200 Multi-Process DualPulse™ MIG Welder"
-              img="/products/1.png"
-              oldPrice={699}
-              newPrice={399}
-            />
-            <ProductCard
-              title="Firstess DP200 Multi-Process DualPulse™ MIG Welder"
-              img="/products/1.png"
-              oldPrice={699}
-              newPrice={399}
-            />
-            <ProductCard
-              title="Firstess DP200 Multi-Process DualPulse™ MIG Welder"
-              img="/products/1.png"
-              oldPrice={699}
-              newPrice={399}
-            />
-            <ProductCard
-              title="Firstess DP200 Multi-Process DualPulse™ MIG Welder"
-              img="/products/1.png"
-              oldPrice={699}
-              newPrice={399}
-            />
-            <ProductCard
-              title="Firstess DP200 Multi-Process DualPulse™ MIG Welder"
-              img="/products/1.png"
-              oldPrice={699}
-              newPrice={399}
-            />
-            <ProductCard
-              title="Firstess DP200 Multi-Process DualPulse™ MIG Welder"
-              img="/products/1.png"
-              oldPrice={699}
-              newPrice={399}
-            />
-          </div>
+          {dealsLoading ? (
+            <div className="w-full flex items-center justify-center py-10">
+              <p className="text-gray-500">Đang tải deal...</p>
+            </div>
+          ) : dealsError ? (
+            <div className="w-full flex items-center justify-center py-10">
+              <p className="text-red-500">Lỗi: {dealsError}</p>
+            </div>
+          ) : displayDeals.length > 0 ? (
+            <div className="w-full flex flex-wrap gap-2.5">
+              {displayDeals.map((deal) => (
+                <ProductCard
+                  key={deal._id}
+                  title={deal.name}
+                  img={getImageUrl(deal.image, "/products/1.png")}
+                  oldPrice={deal.originalPrice}
+                  newPrice={deal.price || 0}
+                  onDeal={() => handleDealClick(deal.url)}
+                  disabled={!deal.url}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="w-full flex items-center justify-center py-10">
+              <p className="text-gray-500">Chưa có deal nào</p>
+            </div>
+          )}
         </div>
 
         <div className="w-full mt-5">
           <h3 className="pb-2 pt-12 text-[28px] text-gray-700">
             Feature Post
           </h3>
-          <div className="w-full flex gap-2.5">
-            <NewsCard
-              title="Shine of Diamond - The Epitome of Modern Luxury Jewelry Art"
-              img="/news/1.jpg"
-              subTitle="Discover Shine of Diamond – a luxury jewelry brand offering exquisite craftsmanship that celebrates elegance, sophistication, and individuality for the modern woman."
-              link="/blog/test"
-              isAuthor={false}
-            />
-          </div>
-          <div className="w-full flex justify-center">
-            <Link 
-              href="/blog"
-              className="inline-block border text-[#0dcaf0] border-[#0dcaf0] text-center 
-              px-3 py-2 my-[50px] rounded-md hover:bg-[#0dcaf0] hover:text-white transition"
-            >
-              View All Article
-            </Link>
-          </div>
+          {newsLoading ? (
+            <div className="w-full flex items-center justify-center py-10">
+              <p className="text-gray-500">Đang tải bài viết...</p>
+            </div>
+          ) : newsError ? (
+            <div className="w-full flex items-center justify-center py-10">
+              <p className="text-red-500">Lỗi: {newsError}</p>
+            </div>
+          ) : displayNews.length > 0 ? (
+            <>
+              <div className="w-full flex gap-2.5 flex-wrap">
+                {displayNews.map((item) => (
+                  <NewsCard
+                    key={item._id}
+                    title={item.name}
+                    img={item.image || "/news/1.jpg"}
+                    subTitle={item.description || ""}
+                    link={`/blog/${item.slug}`}
+                    isAuthor={true}
+                    formatDate={item.formatDate}
+                  />
+                ))}
+              </div>
+              <div className="w-full flex justify-center">
+                <Link 
+                  href="/blog"
+                  className="inline-block border text-[#0dcaf0] border-[#0dcaf0] text-center 
+                  px-3 py-2 my-[50px] rounded-md hover:bg-[#0dcaf0] hover:text-white transition"
+                >
+                  View All Article
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className="w-full flex items-center justify-center py-10">
+              <p className="text-gray-500">Chưa có bài viết nào</p>
+            </div>
+          )}
         </div>
 
         <ListCategories />

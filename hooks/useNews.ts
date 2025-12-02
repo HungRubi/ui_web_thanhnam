@@ -46,7 +46,7 @@ export const useNews = (autoFetch: boolean = true, searchQuery?: string) => {
  * @param autoFetch - Tự động fetch khi component mount (default: true)
  * @returns { news, loading, error, refetch }
  */
-export const useNewsById = (id: string, autoFetch: boolean = true) => {
+export const useNewsById = (id?: string, autoFetch: boolean = true) => {
   const dispatch = useAppDispatch();
   const { currentNews, loading, error } = useAppSelector((state) => state.news);
 

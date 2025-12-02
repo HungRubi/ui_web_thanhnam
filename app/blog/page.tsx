@@ -8,37 +8,17 @@ import ListCategories from "../components/ListCategories"
 import Footer from "../components/Footer"
 import Header from "../components/Header"
 import { useNews } from "@/hooks/useNews"
-import ImageWithFallback from "../components/ImageWithFallback"
+import { resolveImageUrl } from "@/utils/image";
 
 // Helper function để xử lý image URL
-const getImageUrl = (imagePath?: string): string => {
-  if (!imagePath || imagePath.trim() === "") {
-    return "/store/1.jpg";
-  }
-  
-  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-    try {
-      new URL(imagePath);
-      return imagePath;
-    } catch {
-      return "/store/1.jpg";
-    }
-  }
-  
-  if (imagePath.startsWith("/upload/")) {
-    return "/store/1.jpg";
-  }
-  
-  if (imagePath.startsWith("/")) {
-    return imagePath;
-  }
-  
-  return `/${imagePath}`;
-};
+const getImageUrl = (imagePath?: string): string =>
+  resolveImageUrl(imagePath, { fallback: "/store/1.jpg" });
 
 const Blog = () => {
     const { news, loading, error } = useNews();
     const featuredNews = news.filter(item => item.duyet === "Yes")[0];
+    const featuredImageSrc = featuredNews ? getImageUrl(featuredNews.image) : "";
+    const isFeaturedExternal = featuredImageSrc.startsWith("http://") || featuredImageSrc.startsWith("https://");
     const latestNews = news
       .filter(item => item.duyet === "Yes")
       .slice(1);
@@ -49,18 +29,17 @@ const Blog = () => {
             {featuredNews && (
               <div className="w-full mt-10">
                   <div className="container px-3 mx-auto relative overflow-hidden max-h-[370px] h-[370px]">
-                      <ImageWithFallback
+                      <Image
                           width={3000}
                           height={3000}
-                          src={getImageUrl(featuredNews.image)}
+                          src={featuredImageSrc}
                           alt={featuredNews.name}
                           className="w-full h-full object-cover"
-                          fallback="/store/1.jpg"
-                          unoptimized={getImageUrl(featuredNews.image).startsWith("http")}
+                          unoptimized={isFeaturedExternal}
                       />
                       <Link 
                           href={`/blog/${featuredNews._id}`} 
-                          className="absolute text-white w-full px-10 z-10 bg-[#0000003f] min-h-32 flex items-center justify-center flex-col left-0 bottom-0"
+                          className="absolute text-white w-[calc(100%-24px)] ml-3 px-10 z-10 bg-[#0000003f] min-h-32 flex items-center justify-center flex-col left-0 bottom-0"
                       >
                           <h1 className="mb-1.5 w-full line-clamp-1 text-[32px] font-[550] text-center">
                               {featuredNews.name}
@@ -95,7 +74,7 @@ const Blog = () => {
                             title={item.name}
                             img={item.image || "/news/1.jpg"}
                             subTitle={item.description || ""}
-                            link={`/blog/${item._id}`}
+                            link={`/blog/${item.slug}`}
                             isAuthor={true}
                             formatDate={item.formatDate}
                           />

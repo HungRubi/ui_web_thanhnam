@@ -3,6 +3,8 @@ import globalConfigReducer from "./globalConfigSlice";
 import categoryReducer from "./categorySlice";
 import storeReducer from "./storeSlice";
 import newsReducer from "./newsSlice";
+import dealReducer from "./dealSlice";
+import eventReducer from "./eventSlice";
 
 export const makeStore = () => {
   return configureStore({
@@ -11,6 +13,8 @@ export const makeStore = () => {
       category: categoryReducer,
       store: storeReducer,
       news: newsReducer,
+      deal: dealReducer,
+      event: eventReducer,
     },
   });
 };
