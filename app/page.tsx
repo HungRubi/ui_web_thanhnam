@@ -27,7 +27,7 @@ export default function Home() {
   const { stores: apiStores, loading: storesLoading } = useStores();
   const { news: apiNews, loading: newsLoading, error: newsError } = useNews();
   const { deals: apiDeals, loading: dealsLoading, error: dealsError } = useDeals();
-  const { data, loading: loadingGlobalConfig , error: errorGlobalConfig, refetch } = useGlobalConfig();
+  const { data } = useGlobalConfig();
 
   
   const slides = [

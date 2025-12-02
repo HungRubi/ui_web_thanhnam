@@ -36,7 +36,7 @@ const Blog = () => {
                           unoptimized={isFeaturedExternal}
                       />
                       <Link 
-                          href={`/blog/${featuredNews._id}`} 
+                          href={`/blog/${featuredNews.slug}`} 
                           className="absolute text-white w-[calc(100%-24px)] ml-3 px-10 z-10 bg-[#0000003f] min-h-32 flex items-center justify-center flex-col left-0 bottom-0"
                       >
                           <h1 className="mb-1.5 w-full line-clamp-1 text-[32px] font-[550] text-center">
