@@ -86,20 +86,20 @@ const DetailNew = () => {
     return (
         <>
             <Header/>
-            <section className="w-full mb-5">
+            <section className="w-full mb-5 min-h-140">
                 <div className="container mx-auto px-3 mt-12">
                     <div className="flex items-center justify-start gap-2 flex-col sm:flex-row">
                         <Link href={"/"} className="text-[#019a04]">
                             Blog
                             <span className="text-[#019a04]"> / </span>
                         </Link>
-                        <Link href={"/blog"} className="text-[#019a04]">
+                        <Link href={`/blog`} className="text-[#019a04]">
                             {currentNews.name}
                             <span className="text-[#019a04]"> / </span>
                         </Link>
-                        <span className="text-gray-500">
+                        <Link href={`/blog/${currentNews.slug}`} className="text-gray-500">
                             {currentNews.name}
-                        </span>
+                        </Link>
                     </div>
                 </div>
 

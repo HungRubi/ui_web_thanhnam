@@ -6,9 +6,11 @@ import TwitterIcon from "@/utils/sgv/Twitter";
 import InstagramIcon from "@/utils/sgv/Instagram";
 import PinterestIcon from "@/utils/sgv/Pinterest";
 import { useEvents } from "@/hooks/useEvents";
+import { useSocial } from "@/hooks/useSocial";
 
 const Footer = () => {
     const { events, loading, error } = useEvents();
+    const { social, loading: socialLoading } = useSocial();
     const featuredEvents = events
         .filter((event) => event.hienthi !== false)
         .slice(0, 6);
@@ -139,18 +141,26 @@ const Footer = () => {
                         Follow Us On
                     </h3>
                     <div className="mt-4 flex items-center gap-2.5">
-                        <Link href={"#"}>
-                            <FacebookIcon/>
-                        </Link>
-                        <Link href={"#"}>
-                            <TwitterIcon/>
-                        </Link>
-                        <Link href={"#"}>
-                            <InstagramIcon/>
-                        </Link>
-                        <Link href={"#"}>
-                            <PinterestIcon/>
-                        </Link>
+                        {social?.facebook && (
+                            <Link href={social.facebook} target="_blank" rel="noopener noreferrer">
+                                <FacebookIcon/>
+                            </Link>
+                        )}
+                        {social?.twitter && (
+                            <Link href={social.twitter} target="_blank" rel="noopener noreferrer">
+                                <TwitterIcon/>
+                            </Link>
+                        )}
+                        {social?.instagram && (
+                            <Link href={social.instagram} target="_blank" rel="noopener noreferrer">
+                                <InstagramIcon/>
+                            </Link>
+                        )}
+                        {social?.pinterest && (
+                            <Link href={social.pinterest} target="_blank" rel="noopener noreferrer">
+                                <PinterestIcon/>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>

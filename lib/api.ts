@@ -402,6 +402,42 @@ export const fetchEventById = async (id: string): Promise<EventDetail> => {
   }
 };
 
+// Social config interfaces
+export interface SocialConfig {
+  _id?: string;
+  image?: string;
+  facebook?: string;
+  facebookPage?: string;
+  twitter?: string;
+  instagram?: string;
+  pinterest?: string;
+  youtube?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export const fetchSocialConfig = async (): Promise<SocialConfig> => {
+  try {
+    const response = await fetch("/api/social", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: ApiResponse<SocialConfig> = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error("Error fetching social config:", error);
+    throw error;
+  }
+};
+
 // Deal interfaces
 export interface Deal {
   _id?: string;

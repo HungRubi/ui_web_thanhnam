@@ -5,6 +5,7 @@ import storeReducer from "./storeSlice";
 import newsReducer from "./newsSlice";
 import dealReducer from "./dealSlice";
 import eventReducer from "./eventSlice";
+import socialReducer from "./socialSlice";
 
 export const makeStore = () => {
   return configureStore({
@@ -15,6 +16,7 @@ export const makeStore = () => {
       news: newsReducer,
       deal: dealReducer,
       event: eventReducer,
+      social: socialReducer,
     },
   });
 };
