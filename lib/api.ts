@@ -53,6 +53,72 @@ export const fetchGlobalConfig = async (): Promise<GlobalConfig> => {
   }
 };
 
+// Content config interfaces
+export interface ContentConfig {
+  _id?: string;
+  name: string;
+  description?: string;
+  howToApply?: string;
+  FAQs?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export const fetchContentConfig = async (): Promise<ContentConfig> => {
+  try {
+    const response = await fetch("/api/content-config", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: ApiResponse<ContentConfig> = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error("Error fetching content config:", error);
+    throw error;
+  }
+};
+
+// SEO config interfaces
+export interface SeoConfig {
+  _id?: string;
+  metaTitle?: string;
+  metaKeywords?: string;
+  metaDescription?: string;
+  googleAnalyticCode?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export const fetchSeoConfig = async (): Promise<SeoConfig> => {
+  try {
+    const response = await fetch("/api/seo", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: ApiResponse<SeoConfig> = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error("Error fetching seo config:", error);
+    throw error;
+  }
+};
+
 // Category interfaces
 export interface Category {
   _id?: string;

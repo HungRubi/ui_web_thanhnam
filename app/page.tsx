@@ -16,17 +16,19 @@ import "swiper/css/autoplay";
 import { Autoplay, Pagination } from "swiper/modules";
 import Search from "./components/Search";
 import ListCategories from "./components/ListCategories";
-import GlobalConfigDisplay from "@/components/GlobalConfigDisplay";
 import { useStores } from "@/hooks/useStores";
 import { useNews } from "@/hooks/useNews";
 import { useDeals } from "@/hooks/useDeals";
 import { resolveImageUrl } from "@/utils/image";
+import { useGlobalConfig } from "@/hooks/useGlobalConfig";
 
 export default function Home() {
   const storeSwiperRef = useRef<SwiperType | null>(null);
   const { stores: apiStores, loading: storesLoading } = useStores();
   const { news: apiNews, loading: newsLoading, error: newsError } = useNews();
   const { deals: apiDeals, loading: dealsLoading, error: dealsError } = useDeals();
+  const { data, loading: loadingGlobalConfig , error: errorGlobalConfig, refetch } = useGlobalConfig();
+
   
   const slides = [
     {
@@ -82,14 +84,14 @@ export default function Home() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8 w-full">
           <div className="w-full flex flex-col items-center">
             <Image
-              src="/images/logo.jpg"
-              alt="test"
-              width={423}
-              height={Math.round(423 * 0.75)}
-              className="max-w-[423px] w-full"
+              src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.logo}`}
+              alt={data?.nameCompany || "Store"}
+              width={300}
+              height={170}
+              className="max-w-[400px] w-full h-auto object-contain"
             />
             <p className="text-[12px] font-medium">
-              Slogan-Thành Nam Store
+              {data?.slogan}
             </p>
           </div>
 
@@ -167,7 +169,7 @@ export default function Home() {
                   </div>
                 </SwiperSlide>
               ) : displayStores.length > 0 ? (
-                displayStores.map((item, index) => {
+                displayStores.slice(0, 13).map((item, index) => {
                   const isExternalImage = item.img.startsWith("http://") || item.img.startsWith("https://");
                   return (
                     <SwiperSlide key={index}>
@@ -282,9 +284,6 @@ export default function Home() {
         <ListCategories />
       </div>
 
-      {/* Test Global Config - Có thể xóa sau */}
-      <GlobalConfigDisplay />
-      
       <div className="w-full">
         <Footer />
       </div>

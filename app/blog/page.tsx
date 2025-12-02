@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image"
-import Search from "../components/Search"
 import Link from "next/link"
 import NewsCard from "../components/NewsCard"
 import ListCategories from "../components/ListCategories"
@@ -10,7 +9,6 @@ import Header from "../components/Header"
 import { useNews } from "@/hooks/useNews"
 import { resolveImageUrl } from "@/utils/image";
 
-// Helper function để xử lý image URL
 const getImageUrl = (imagePath?: string): string =>
   resolveImageUrl(imagePath, { fallback: "/store/1.jpg" });
 

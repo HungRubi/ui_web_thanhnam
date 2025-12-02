@@ -1,23 +1,93 @@
 "use client";
-import Image from "next/image"
+
+import Image from "next/image";
 import Link from "next/link";
-import Search from "../../components/Search"
 import icons from "@/utils/icons";
 import Footer from "@/app/components/Footer";
 import ModalCoupon from "@/app/components/ModalCoupon";
 import { useStoreBySlug } from "@/hooks/useStores";
 import { useParams } from "next/navigation";
 import { resolveImageUrl } from "@/utils/image";
+import Header from "@/app/components/Header";
+import { useContentConfig } from "@/hooks/useContentConfig";
+import { useMemo } from "react";
 const {FaStar} = icons
 
 // Helper function để xử lý và validate image URL
 const getImageUrl = (imagePath?: string): string => {
   return resolveImageUrl(imagePath, { fallback: "/store/1.jpg" });
 };
+
+const formatTemplateContent = (
+  template: string,
+  storeName: string,
+  siteName: string
+) => {
+  if (!template) return "";
+  const replaced = template
+    .replace(/{{\s*store_name\s*}}/gi, storeName)
+    .replace(/{{\s*site_name\s*}}/gi, siteName)
+    .trim();
+
+  if (!replaced) return "";
+
+  const lines = replaced
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  if (lines.length === 0) {
+    return `<p>${replaced}</p>`;
+  }
+
+  const paragraphs = lines.map((line) => {
+    if (/^Step\s+\d+:/i.test(line)) {
+      const labelMatch = line.match(/^(Step\s+\d+:)/i);
+      const label = labelMatch ? labelMatch[1] : "Step";
+      const content = line.replace(/^(Step\s+\d+:)\s*/i, "");
+      return `<p><strong>${label}</strong> ${content}</p>`;
+    }
+
+    if (/^Q:\s*/i.test(line)) {
+      const content = line.replace(/^Q:\s*/i, "");
+      return `<p><strong>Q:</strong> ${content}</p>`;
+    }
+
+    if (/^A:\s*/i.test(line)) {
+      const content = line.replace(/^A:\s*/i, "");
+      return `<p><strong>A:</strong> ${content}</p>`;
+    }
+
+    return `<p>${line}</p>`;
+  });
+
+  return paragraphs.join("");
+};
 export default function Store () {
     const params = useParams();
     const slug = params?.slug as string;
     const { store, loading, error } = useStoreBySlug(slug);
+    const { data: contentConfig } = useContentConfig();
+    const siteName = contentConfig?.name || "Our site";
+    const storeName = store?.tenstore || "";
+
+    const formattedHowToApply = useMemo(() => {
+      if (!storeName) return store?.howtoapply || "";
+      if (store?.howtoapply) return store.howtoapply;
+      if (contentConfig?.howToApply) {
+        return formatTemplateContent(contentConfig.howToApply, storeName, siteName);
+      }
+      return "";
+    }, [store?.howtoapply, storeName, contentConfig?.howToApply, siteName]);
+
+    const formattedFaqs = useMemo(() => {
+      if (!storeName) return store?.faqs || "";
+      if (store?.faqs) return store.faqs;
+      if (contentConfig?.FAQs) {
+        return formatTemplateContent(contentConfig.FAQs, storeName, siteName);
+      }
+      return "";
+    }, [store?.faqs, storeName, contentConfig?.FAQs, siteName]);
 
     if (loading) {
         return (
@@ -38,22 +108,7 @@ export default function Store () {
     const isExternalImage = storeImageSrc.startsWith("http://") || storeImageSrc.startsWith("https://");
     return (
         <>
-            <nav className="w-full py-2">
-                <div className="container px-3 mx-auto grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
-                    <div className="col-span-1 mx-auto">
-                        <Image
-                        src="/images/logo.jpg"
-                        alt="test"
-                        width={300}
-                        height={250}
-                        className="h-[65px] object-cover"
-                        />
-                    </div>
-                    <div className="col-span-3">
-                        <Search />
-                    </div>
-                </div>
-            </nav>
+            <Header />
             <div className="w-full">
                 <div className="container px-3 mx-auto mt-12 grid grid-cols-1 sm:grid-cols-4 gap-x-7">
                     <div className="col-span-1">
@@ -200,7 +255,7 @@ export default function Store () {
                             </>
                         )}
 
-                        {store.howtoapply && (
+                        {formattedHowToApply && (
                             <>
                                 <h2 className="text-2xl text-gray-700 font-semibold mt-10 mb-4">
                                     How to apply {store.tenstore} coupon codes
@@ -208,13 +263,13 @@ export default function Store () {
                                 <div className="w-full border border-gray-200 p-4 text-[#555]">
                                     <div 
                                         className="mb-4 leading-7"
-                                        dangerouslySetInnerHTML={{ __html: store.howtoapply }}
+                                        dangerouslySetInnerHTML={{ __html: formattedHowToApply }}
                                     />
                                 </div>
                             </>
                         )}
 
-                        {store.faqs && (
+                        {formattedFaqs && (
                             <>
                                 <h2 className="text-2xl text-gray-700 font-semibold mt-10 mb-4">
                                     {store.tenstore} Questions & Answers
@@ -222,7 +277,7 @@ export default function Store () {
                                 <div className="w-full border border-gray-200 p-4 text-[#555]">
                                     <div 
                                         className="leading-7"
-                                        dangerouslySetInnerHTML={{ __html: store.faqs }}
+                                        dangerouslySetInnerHTML={{ __html: formattedFaqs }}
                                     />
                                 </div>
                             </>
