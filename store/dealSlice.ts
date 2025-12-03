@@ -21,7 +21,7 @@ const initialState: DealState = {
 
 export const getDeals = createAsyncThunk(
   "deal/fetch",
-  async (searchQuery?: string, { rejectWithValue }) => {
+  async (searchQuery: string | undefined, { rejectWithValue }) => {
     try {
       const data = await fetchDeals(searchQuery);
       return data;

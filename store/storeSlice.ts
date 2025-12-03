@@ -26,7 +26,7 @@ const initialState: StoreState = {
 // Async thunk để fetch stores
 export const getStores = createAsyncThunk(
   "store/fetch",
-  async (searchQuery?: string, { rejectWithValue }) => {
+  async (searchQuery: string | undefined, { rejectWithValue }) => {
     try {
       const data = await fetchStores(searchQuery);
       return data;

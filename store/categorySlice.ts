@@ -22,7 +22,7 @@ const initialState: CategoryState = {
 // Async thunk để fetch categories
 export const getCategories = createAsyncThunk(
   "category/fetch",
-  async (searchQuery?: string, { rejectWithValue }) => {
+  async (searchQuery: string | undefined, { rejectWithValue }) => {
     try {
       const data = await fetchCategories(searchQuery);
       return data;

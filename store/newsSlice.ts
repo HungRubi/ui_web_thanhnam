@@ -24,7 +24,7 @@ const initialState: NewsState = {
 // Async thunk để fetch news
 export const getNews = createAsyncThunk(
   "news/fetch",
-  async (searchQuery?: string, { rejectWithValue }) => {
+  async (searchQuery: string | undefined, { rejectWithValue }) => {
     try {
       const data = await fetchNews(searchQuery);
       return data;

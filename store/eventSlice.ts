@@ -21,7 +21,7 @@ const initialState: EventState = {
 
 export const getEvents = createAsyncThunk(
   "event/fetch",
-  async (searchQuery?: string, { rejectWithValue }) => {
+  async (searchQuery: string | undefined, { rejectWithValue }) => {
     try {
       const data = await fetchEvents(searchQuery);
       return data;
