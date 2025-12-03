@@ -1,19 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import React from "react";
 type ModalCouponProps = {
     btn: boolean,
+    offers?: any[],
+    storeUrl?: string,
 }
 
 
 
-const ModalCoupon: React.FC<ModalCouponProps> = ({btn}) => {
+const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], storeUrl}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [selectedOffer, setSelectedOffer] = useState<any | null>(null);
 
     const handleOpen = () => {
+        // pick random offer when opening
+        if (offers && offers.length > 0) {
+            const idx = Math.floor(Math.random() * offers.length);
+            setSelectedOffer(offers[idx]);
+        } else {
+            setSelectedOffer(null);
+        }
+
         setIsOpen(true);
         // Trigger animation after modal is mounted
         setTimeout(() => setIsAnimating(true), 10);
@@ -23,9 +34,31 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn}) => {
         setIsAnimating(false);
         // Wait for animation to complete before unmounting
         setTimeout(() => {
-        setIsOpen(false);
-        setIsAnimating(false); // Reset for next open
+            setCoppy(0);
+            setIsOpen(false);
+            setIsAnimating(false); // Reset for next open
         }, 300);
+    };
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [coppy, setCoppy] = useState(0)
+    const handleCopy = () => {
+        if (selectedOffer && selectedOffer.code) {
+            navigator.clipboard.writeText(selectedOffer.code);
+            setCoppy(1);
+            // open offer url if present
+            if (selectedOffer.url) {
+                window.open(selectedOffer.url, "_blank");
+            }
+            alert("Copied: " + selectedOffer.code);
+            return;
+        }
+
+        // no offer: if storeUrl provided, navigate to it
+        if (storeUrl) {
+            window.open(storeUrl, "_blank");
+            return;
+        }
+        alert("No coupon available");
     };
 
     return (
@@ -79,27 +112,56 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn}) => {
                                 Up to $25 Off Site-wide
                             </p>
                         </div>
-                        <div className="flex flex-col items-center relative border-t border-slate-200 py-4 leading-normal text-slate-600 font-light">
-                            <p className="my-4">
-                                Copy the code and go to
-                                <span className="text-[#019a04] ml-1.5">Amyet</span>             
-                            </p>    
-                            <div className="h-12 flex items-center justify-center">
-                                <input 
-                                    type="text"
-                                    name="coupon"
-                                    readOnly 
-                                    className="h-full max-w-60 text-[22px] font-medium bg-[#e9ecef] border border-dashed text-center"
-                                    style={{borderColor: "#019a04"}}
-                                    value={"TEST"}
-                                />
-                                <button className="capitalize px-6 h-full bg-[#019a04] text-white">
-                                    tap to coppy
-                                </button>
-                            </div>
-                            <div className="mt-8 text-[#019a04] capitalize">
-                                more amyet &gt; &gt;
-                            </div>
+                            <div className="flex flex-col items-center relative border-t border-slate-200 py-4 leading-normal text-slate-600 font-light">
+                            {selectedOffer ? (
+                                <>
+                                    <p className="my-4">
+                                        Copy the code and go to
+                                        <span className="text-[#019a04] ml-1.5">{selectedOffer.name || 'the store'}</span>
+                                    </p>
+                                    <div className="h-12 flex items-center justify-center">
+                                        <input 
+                                            ref={inputRef}
+                                            type="text"
+                                            name="coupon"
+                                            readOnly 
+                                            className="h-full max-w-60 text-[22px] font-medium bg-[#e9ecef] border border-dashed text-center"
+                                            style={{borderColor: "#019a04"}}
+                                            value={selectedOffer.code || selectedOffer.offer || ''}
+                                        />
+                                        <button 
+                                            className="capitalize px-6 h-full bg-[#019a04] text-white cursor-pointer"
+                                            onClick={handleCopy}
+                                        >
+                                            {coppy === 1 ? "Copied!" : "Tap to copy"}
+                                        </button>
+                                    </div>
+                                    <div className="mt-8 text-[#019a04] capitalize">
+                                        more {selectedOffer.name || 'store'} &gt; &gt;
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="my-4 text-center">No coupons available at the moment.</p>
+                                    <div className="h-12 flex items-center justify-center">
+                                        <input 
+                                            ref={inputRef}
+                                            type="text"
+                                            name="coupon"
+                                            readOnly 
+                                            className="h-full max-w-60 text-[22px] font-medium bg-[#e9ecef] border border-dashed text-center"
+                                            style={{borderColor: "#019a04"}}
+                                            value={""}
+                                        />
+                                        <button 
+                                            className="capitalize px-6 h-full bg-[#019a04] text-white cursor-pointer"
+                                            onClick={handleCopy}
+                                        >
+                                            Visit store
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                             <div className="mt-8">
                                 <Image
                                     width={300}

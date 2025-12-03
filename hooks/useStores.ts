@@ -48,7 +48,7 @@ export const useStores = (autoFetch: boolean = true, searchQuery?: string) => {
  */
 export const useStoreBySlug = (slug: string, autoFetch: boolean = true) => {
   const dispatch = useAppDispatch();
-  const { currentStore, loading, error } = useAppSelector((state) => state.store);
+  const { currentStore, currentOffers, loading, error } = useAppSelector((state) => state.store as any);
 
   useEffect(() => {
     if (autoFetch && slug) {
@@ -64,6 +64,7 @@ export const useStoreBySlug = (slug: string, autoFetch: boolean = true) => {
 
   return {
     store: currentStore,
+    offers: currentOffers,
     loading,
     error,
     refetch,

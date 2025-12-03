@@ -111,7 +111,7 @@ const SlugHome = () => {
                                 <p className="p-3 text-gray-400">Không có category</p>
                             )}
                             {!categoriesLoading &&
-                                categories.map((cat) => (
+                                categories.slice(0,15).map((cat) => (
                                     <Link
                                         key={cat._id || cat.slug}
                                         href={`/search?category=${cat.slug}`}

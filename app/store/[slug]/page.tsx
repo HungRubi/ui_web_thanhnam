@@ -11,9 +11,9 @@ import { resolveImageUrl } from "@/utils/image";
 import Header from "@/app/components/Header";
 import { useContentConfig } from "@/hooks/useContentConfig";
 import { useMemo } from "react";
+import { useStores } from "@/hooks/useStores";
 const {FaStar} = icons
 
-// Helper function để xử lý và validate image URL
 const getImageUrl = (imagePath?: string): string => {
   return resolveImageUrl(imagePath, { fallback: "/store/1.jpg" });
 };
@@ -63,14 +63,15 @@ const formatTemplateContent = (
 
   return paragraphs.join("");
 };
+
 export default function Store () {
     const params = useParams();
     const slug = params?.slug as string;
-    const { store, loading, error } = useStoreBySlug(slug);
+    const { store, offers, loading, error } = useStoreBySlug(slug);
     const { data: contentConfig } = useContentConfig();
     const siteName = contentConfig?.name || "Our site";
     const storeName = store?.tenstore || "";
-
+    const { stores: apiStores, loading: storesLoading } = useStores();
     const formattedHowToApply = useMemo(() => {
       if (!storeName) return store?.howtoapply || "";
       if (store?.howtoapply) return store.howtoapply;
@@ -116,7 +117,7 @@ export default function Store () {
                             <div className="h-[150px]">
                                 <Image
                                     src={storeImageSrc}
-                                    alt={store.tenstore}
+                                    alt={store?.tenstore}
                                     width={300}
                                     height={300}
                                     className="h-full object-cover w-auto"
@@ -140,15 +141,15 @@ export default function Store () {
                             <div className="bg-amber-50 px-2.5 py-1 my-2">
                                 <p className="text-amber-400">Rate it</p>
                             </div>
-                            <ModalCoupon btn={true}/>
+                            <ModalCoupon btn={true} offers={offers} storeUrl={`/store/${store.slug}`} />
                         </div>
                         <div className="bg-white mt-2.5 p-4 text-sm text-gray-700 shadow">
                             <p className="font-bold line-clamp-2 mb-3">
-                                3 Coupons, 3 Verified Coupons
+                                {offers.length} Coupons, {offers.length} Verified Coupons
                             </p>
                             <div className="w-full flex items-center justify-between mb-2">
                                 <p>Coupon Codes</p>
-                                <p>3</p>
+                                <p>{offers.length}</p>
                             </div>
                             <div className="w-full flex items-center justify-between mb-2">
                                 <p>Deal</p>
@@ -170,76 +171,41 @@ export default function Store () {
                             </div>
                         )}
 
-                        <div className="mb-2 w-full flex items-center gap-x-2.5">
-                            <div className="bg-white text-[#019a04] px-6 py-2 rounded-md font-bold shadow
-                                            hover:bg-[#019a04] hover:text-white transition">
-                                All (3)
-                            </div>
-                            <div className="bg-white text-[#019a04] px-6 py-2 rounded-md font-bold shadow
-                                            hover:bg-[#019a04] hover:text-white transition">
-                                Verified (3)
-                            </div>
-                            <div className="bg-white text-[#019a04] px-6 py-2 rounded-md font-bold shadow
-                                            hover:bg-[#019a04] hover:text-white transition">
-                                Code (3)
-                            </div>
-                            <div className="bg-white text-[#019a04] px-6 py-2 rounded-md font-bold shadow
-                                            hover:bg-[#019a04] hover:text-white transition">
-                                Deal (3)
+                        <div className="mb-5 w-full flex items-center gap-x-2.5">
+                            <div className="px-6 py-2 rounded-md font-bold shadow cursor-pointer
+                                            bg-[#019a04] text-white transition">
+                                All ({offers.length})
                             </div>
                         </div>
 
-                        <div className="w-full bg-white flex p-2.5 min-h-[130px] items-center mb-4 shadow rounded">
-                            <div 
-                                className="w-[110px] flex-none h-[130px] flex items-center border-r border-dashed" 
-                                style={{ borderColor: "#e7e7e7" }}
-                            >
-                                <p className="text-[22px] font-black text-[#019a04]">25% Off</p>
+                        {/* Offers list: render backend offers if present, otherwise show example blocks */}
+                        {offers && offers.length > 0 ? (
+                            offers.map((o: any, i: number) => (
+                                <div key={o._id || i} className="w-full bg-white flex p-2.5 min-h-[130px] items-center mb-4 shadow rounded">
+                                    <div className="w-[110px] flex-none h-[130px] flex items-center border-r border-dashed" style={{ borderColor: "#e7e7e7" }}>
+                                        <p className="text-[22px] font-black text-[#019a04]">{o.offer || "Deal"}</p>
+                                    </div>
+                                    <div className="w-full flex flex-col justify-start h-[130px] ml-2.5">
+                                        <p className="text-[#019a04] font-bold">{o.verified === "Yes" ? "Verified Code" : "Deal"}</p>
+                                        <h2 className="text-xl font-bold text-gray-700 my-4">
+                                            <Link href={o.url || "#"} target={o.url ? "_blank" : undefined}>
+                                                {o.name || o.description || `Offer ${i + 1}`}
+                                            </Link>
+                                        </h2>
+                                        <p className="min-w-9/10 text-sm text-gray-600 tracking-wide">
+                                            {o.description || "No description available."}
+                                        </p>
+                                    </div>
+                                        <div className="w-[235px] flex-none flex justify-center">
+                                            <ModalCoupon btn={false} offers={offers} storeUrl={`/store/${store.slug}`} />
+                                        </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center w-full italic">
+                                No coupon not found
                             </div>
-                            <div className="w-full flex flex-col justify-start h-[130px] ml-2.5">
-                                <p className="text-[#019a04] font-bold">
-                                    Verified Code
-                                </p>
-                                <h2 className="text-xl font-bold text-gray-700 my-4">
-                                    <Link href={""}>
-                                        Up to $25 Off Site-wide
-                                    </Link>
-                                </h2>
-                                <p className="min-w-9/10 text-sm text-gray-600 tracking-wide">
-                                    Spend much less on your dream items when you shop at Amyet. 
-                                    Grab the garbain before it&apos;s gone.
-                                </p>
-                            </div>
-                            <div className="w-[235px] flex-none flex justify-center">
-                                <ModalCoupon btn={false} />
-                            </div>
-                        </div>
-
-                        <div className="w-full bg-white flex p-2.5 min-h-[130px] items-center mb-4 shadow rounded">
-                            <div 
-                                className="w-[110px] flex-none h-[130px] flex items-center border-r border-dashed" 
-                                style={{ borderColor: "#e7e7e7" }}
-                            >
-                                <p className="text-[22px] font-black text-[#019a04]">35% Off</p>
-                            </div>
-                            <div className="w-full flex flex-col justify-start h-[130px] ml-2.5">
-                                <p className="text-[#019a04] font-bold">
-                                    Verified Code
-                                </p>
-                                <h2 className="text-xl font-bold text-gray-700 my-4">
-                                    <Link href={""}>
-                                        Up to 35% Off Site-wide
-                                    </Link>
-                                </h2>
-                                <p className="min-w-9/10 text-sm text-gray-600 tracking-wide">
-                                    Spend much less on your dream items when you shop at Amyet. 
-                                    Grab the garbain before it&apos;s gone.
-                                </p>
-                            </div>
-                            <div className="w-[235px] flex-none flex justify-center">
-                                <ModalCoupon btn={false} />
-                            </div>
-                        </div>
+                        )}
 
                         {store.about && (
                             <>
@@ -292,55 +258,34 @@ export default function Store () {
                     </h3>
                     <div className="w-full grid grid-cols-1 sm:grid-cols-3 text-[#019a04]">
                         <div className="col-span-1 flex flex-col">
-                            <Link href={""}>
-                                ATK 
-                            </Link>
-                            <Link href={""}>
-                                FreeBoy 
-                            </Link>
-                            <Link href={""}>
-                                Retevis 
-                            </Link>
-                            <Link href={""}>
-                                Superstratum Labs 
-                            </Link>
-                            <Link href={""}>
-                                Nogy 
-                            </Link>
+                            {apiStores?.slice(0,5).map((item: any) => (
+                                <Link 
+                                    href={`/store/${item.slug}`}
+                                    key={item._id}
+                                >
+                                    {item.tenstore}
+                                </Link>
+                            ))}
                         </div>
                         <div className="col-span-1 flex flex-col">
-                            <Link href={""}>
-                                ATK 
-                            </Link>
-                            <Link href={""}>
-                                FreeBoy 
-                            </Link>
-                            <Link href={""}>
-                                Retevis 
-                            </Link>
-                            <Link href={""}>
-                                Superstratum Labs 
-                            </Link>
-                            <Link href={""}>
-                                Nogy 
-                            </Link>
+                            {apiStores?.slice(5,10).map((item: any) => (
+                                <Link 
+                                    href={`/store/${item.slug}`}
+                                    key={item._id}
+                                >
+                                    {item.tenstore}
+                                </Link>
+                            ))}
                         </div>
                         <div className="col-span-1 flex flex-col">
-                            <Link href={""}>
-                                ATK 
-                            </Link>
-                            <Link href={""}>
-                                FreeBoy 
-                            </Link>
-                            <Link href={""}>
-                                Retevis 
-                            </Link>
-                            <Link href={""}>
-                                Superstratum Labs 
-                            </Link>
-                            <Link href={""}>
-                                Nogy 
-                            </Link>
+                            {apiStores?.slice(10,15).map((item: any) => (
+                                <Link 
+                                    href={`/store/${item.slug}`}
+                                    key={item._id}
+                                >
+                                    {item.tenstore}
+                                </Link>
+                            ))}
                         </div>
                     </div>
                 </div>

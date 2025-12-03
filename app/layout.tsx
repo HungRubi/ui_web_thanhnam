@@ -50,7 +50,13 @@ export default async function RootLayout({
         {seoConfig?.googleAnalyticCode && (
           <script
             dangerouslySetInnerHTML={{
-              __html: seoConfig.googleAnalyticCode,
+              __html: `
+                try {
+                  ${seoConfig.googleAnalyticCode}
+                } catch (e) {
+                  console.warn('Analytics script error:', e);
+                }
+              `,
             }}
           />
         )}

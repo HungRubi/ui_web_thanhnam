@@ -19,6 +19,7 @@ import ListCategories from "./components/ListCategories";
 import { useStores } from "@/hooks/useStores";
 import { useNews } from "@/hooks/useNews";
 import { useDeals } from "@/hooks/useDeals";
+import { useWidgets } from "@/hooks/useWidgets";
 import { resolveImageUrl } from "@/utils/image";
 import { useGlobalConfig } from "@/hooks/useGlobalConfig";
 
@@ -27,38 +28,30 @@ export default function Home() {
   const { stores: apiStores, loading: storesLoading } = useStores();
   const { news: apiNews, loading: newsLoading, error: newsError } = useNews();
   const { deals: apiDeals, loading: dealsLoading, error: dealsError } = useDeals();
+  const { widgets, loading: widgetsLoading } = useWidgets();
   const { data } = useGlobalConfig();
 
-  
-  const slides = [
-    {
-      src: "/slides/1.png",
-      alt: "Superstratum Labs",
-      href: "https://superstratumlabs.com/?ref=NAMNGUYENTHANH",
-    },
-    {
-      src: "/slides/2.png",
-      alt: "ATK",
-      href: "https://www.atk.store/?ref=NAMNGUYENTHANH",
-    },
-    {
-      src: "/slides/3.png",
-      alt: "Sunwayfoto",
-      href: "https://sunwayfoto.com/?ref=nicczswj",
-    },
-    {
-      src: "/slides/4.png",
-      alt: "Dasaita",
-      href: "https://www.dasaita.com/?ref=zwcfddde",
-    },
-    {
-      src: "/slides/5.png",
-      alt: "Yeswelder",
-      href: "https://yeswelder.com/?ref=vytbxsvm",
-    }
-  ];
+  const slides = widgets
+    .filter(w => w.hienthi === "Yes")
+    .sort((a, b) => (a.stt || 99999) - (b.stt || 99999))
+    .map(w => ({
+      src: resolveImageUrl(w.image, { fallback: "/slides/1.png" }),
+      alt: w.name,
+      href: w.link || "/",
+      description: w.description,
+    }))
+    .length > 0
+    ? widgets
+        .filter(w => w.hienthi === "Yes")
+        .sort((a, b) => (a.stt || 99999) - (b.stt || 99999))
+        .map(w => ({
+          src: resolveImageUrl(w.image, { fallback: "/slides/1.png" }),
+          alt: w.name,
+          href: w.link || "/",
+          description: w.description,
+        })) : []
   const getImageUrl = (imagePath?: string, fallback: string = "/store/1.jpg"): string =>
-    resolveImageUrl(imagePath, { fallback });
+  resolveImageUrl(imagePath, { fallback });
   const handleDealClick = (url?: string) => {
     if (!url) return;
     window.open(url, "_blank", "noopener,noreferrer");

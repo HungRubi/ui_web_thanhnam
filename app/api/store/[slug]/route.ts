@@ -70,11 +70,11 @@ export async function GET(
     }
 
     const detailResult = await detailResponse.json();
-    
-    // Backend trả về { data: { store: ... } }
-    const store = detailResult.data?.store || detailResult.data;
-    
-    if (!store) {
+
+    // Backend may return { data: { store, offers } } or { data: store }
+    const detailData = detailResult.data || detailResult;
+
+    if (!detailData) {
       return NextResponse.json(
         { 
           message: "Store not found",
@@ -84,7 +84,8 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ data: store }, { status: 200 });
+    // Forward the backend detail object as-is under `data` so frontend can access `store` and `offers` when present
+    return NextResponse.json({ data: detailData }, { status: 200 });
   } catch (error) {
     console.error("Error fetching store:", error);
     return NextResponse.json(

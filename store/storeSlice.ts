@@ -5,6 +5,7 @@ interface StoreState {
   stores: Store[];
   searchStores: Store[];
   currentStore: Store | null;
+  currentOffers: any[];
   totalPage: number;
   searchType: boolean;
   loading: boolean;
@@ -15,6 +16,7 @@ const initialState: StoreState = {
   stores: [],
   searchStores: [],
   currentStore: null,
+  currentOffers: [],
   totalPage: 0,
   searchType: false,
   loading: false,
@@ -101,7 +103,15 @@ const storeSlice = createSlice({
       })
       .addCase(getStoreBySlug.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentStore = action.payload;
+        // Backend may return { offers, store } or directly the store object
+        const payload: any = action.payload;
+        if (payload && (payload.offers || payload.store)) {
+          state.currentOffers = payload.offers || [];
+          state.currentStore = payload.store || null;
+        } else {
+          state.currentStore = payload as Store;
+          state.currentOffers = [];
+        }
         state.error = null;
       })
       .addCase(getStoreBySlug.rejected, (state, action) => {
