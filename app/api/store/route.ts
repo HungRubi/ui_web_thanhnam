@@ -5,11 +5,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const searchQuery = searchParams.get("timkiem");
-    
-    const url = searchQuery 
-      ? `${API_BASE_URL}/store?timkiem=${encodeURIComponent(searchQuery)}`
-      : `${API_BASE_URL}/store`;
+    const qs = searchParams.toString();
+    const url = qs ? `${API_BASE_URL}/store?${qs}` : `${API_BASE_URL}/store`;
 
     const response = await fetch(url, {
       method: "GET",

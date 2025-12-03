@@ -96,11 +96,11 @@ export default function Home() {
 
       <div className="container mx-auto px-3 mt-5">
         <div className="w-full text-center">
-          <p className="font-bold text-[34px] mb-5 leading-1 text-gray-700">
+          <p className="font-bold text-xl mb-5 leading-1 text-gray-700 md:text-3xl sm:text-2xl xl:text-[35px]">
             Shop Now With Thousands Of Discount Codes
           </p>
           <p className="font-bold text-base leading-none text-gray-700">
-            Shop Now With Thousands Of Discount Codes
+            Huge savings with a completely free discount code constantly updated, over the world
           </p>
         </div>
 
@@ -137,6 +137,14 @@ export default function Home() {
               modules={[Pagination, Autoplay]}
               spaceBetween={20}
               slidesPerView={7}
+              breakpoints={{
+                320: { slidesPerView: 1 },
+                480: { slidesPerView: 2 },
+                768: { slidesPerView: 4 },
+                1024: { slidesPerView: 5 },
+                1280: { slidesPerView: 6 },
+                1536: { slidesPerView: 7 },
+              }}
               pagination={{ clickable: true }}
               loop={false}
               style={{ padding: "20px 0" }}
@@ -166,16 +174,22 @@ export default function Home() {
                   const isExternalImage = item.img.startsWith("http://") || item.img.startsWith("https://");
                   return (
                     <SwiperSlide key={index}>
-                      <Link href={`/store/${item.slug}`} style={{ textAlign: "center" }}>
+                      <Link 
+                        href={`/store/${item.slug}`} 
+                        style={{ textAlign: "center" }}
+                        className="overflow-hidden"
+                      >
                         <Image
                           src={item.img}
                           alt={item.name || "Store"}
                           width={200}
                           height={200}
-                          className="w-full h-auto object-contain"
+                          className="w-full h-auto object-contain min-w-45"
                           unoptimized={isExternalImage}
                         />
-                        <p className="my-2.5">{item.name}</p>
+                        <div className="w-full text-center">
+                          <p className="my-2.5 truncate">{item.name}</p>
+                        </div>
                       </Link>
                     </SwiperSlide>
                   );
@@ -245,7 +259,7 @@ export default function Home() {
           ) : displayNews.length > 0 ? (
             <>
               <div className="w-full flex gap-2.5 flex-wrap">
-                {displayNews.map((item) => (
+                {displayNews.slice(0, 5).map((item) => (
                   <NewsCard
                     key={item._id}
                     title={item.name}

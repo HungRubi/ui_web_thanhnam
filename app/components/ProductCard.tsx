@@ -17,7 +17,7 @@ const ProductCard: FC<ProductCardProps> = ({title, img, oldPrice, newPrice, onDe
   const imageSrc = resolveImageUrl(img, { fallback: "/products/1.png" });
   const isExternalImage = imageSrc.startsWith("http://") || imageSrc.startsWith("https://");
   return (
-    <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition w-[calc(100%/6-6px)] relative">
+    <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition min-w-[200px] w-[calc(100%/6-6px)] relative">
       <div className="absolute left-2 top-2 text-red-500 text-xl">
         ⚡
       </div>

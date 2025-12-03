@@ -111,8 +111,8 @@ export default function Store () {
         <>
             <Header />
             <div className="w-full">
-                <div className="container px-3 mx-auto mt-12 grid grid-cols-1 sm:grid-cols-4 gap-x-7">
-                    <div className="col-span-1">
+                <div className="container px-3 mx-auto mt-12 grid grid-cols-4 sm:grid-cols-4 gap-x-7">
+                    <div className="col-span-1 max-[435px]:mb-5 max-[435px]:mx-auto max-[435px]:w-full max-[435px]:col-span-full">
                         <div className="w-full flex items-center justify-center bg-white flex-col shadow">
                             <div className="h-[150px]">
                                 <Image
@@ -161,8 +161,8 @@ export default function Store () {
                             </div>
                         </div>
                     </div>
-                    <div className="col-span-3">
-                        <h3 className="text-[28px] font-semibold pb-3 leading-7 w-full text-gray-700">
+                    <div className="col-span-3 max-[435px]:mx-auto max-[435px]:w-full max-[435px]:col-span-full">
+                        <h3 className="text-[28px] font-semibold pb-3 leading-7 w-full text-gray-700 max-[435px]:text-xl">
                             {store.tenstore} Coupons and Promo Codes
                         </h3>
                         {store.motangan && (

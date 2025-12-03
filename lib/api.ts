@@ -32,8 +32,8 @@ export interface ApiResponse<T> {
 
 export const fetchGlobalConfig = async (): Promise<GlobalConfig> => {
   try {
-    // Sử dụng Next.js API route để tránh CORS
-    const response = await fetch("/api/global", {
+    // Use backend API directly (absolute URL) to work during server-side calls
+    const response = await fetch(`${API_BASE_URL}/global`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -49,7 +49,27 @@ export const fetchGlobalConfig = async (): Promise<GlobalConfig> => {
     return result.data;
   } catch (error) {
     console.error("Error fetching global config:", error);
-    throw error;
+    // Return a sensible default so server-side rendering / metadata generation
+    // won't throw and will have fallback values.
+    return {
+      name: "Thành Nam Store",
+      logo: undefined,
+      favicon: undefined,
+      blockIndex: "No",
+      slogan: "Uy tín tạo niềm tin",
+      nameCompany: "Thanh Nam Company",
+      copyRight: "© 2025 HungRuBy. All rights reserved.",
+      userPost: undefined,
+      hotline: undefined,
+      phone: undefined,
+      address: undefined,
+      email: undefined,
+      linkDKBCT: undefined,
+      googleMap: undefined,
+      footer: undefined,
+      contact: undefined,
+      lastUpdate: undefined,
+    } as GlobalConfig;
   }
 };
 

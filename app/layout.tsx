@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "@/components/StoreProvider";
 import { getSeoConfig } from "@/lib/server/seoConfig";
+import { fetchGlobalConfig } from "@/lib/api";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,17 +22,36 @@ const DEFAULT_META = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeoConfig();
+  let favicon: string | undefined;
 
-  return {
+  try {
+    const globalConfig = await fetchGlobalConfig();
+    if (globalConfig.favicon) {
+      favicon = `${process.env.NEXT_PUBLIC_API_URL}/${globalConfig.favicon}`;
+    }
+  } catch (error) {
+    console.error("Failed to fetch global config for favicon:", error);
+  }
+
+  const metadata: Metadata = {
     title: seo?.metaTitle || DEFAULT_META.title,
     description: seo?.metaDescription || DEFAULT_META.description,
     keywords: seo?.metaKeywords,
-    other: seo?.googleAnalyticCode
-      ? {
-          "google-analytics": "enabled",
-        }
-      : undefined,
   };
+
+  if (favicon) {
+    metadata.icons = {
+      icon: favicon,
+    };
+  }
+
+  if (seo?.googleAnalyticCode) {
+    metadata.other = {
+      "google-analytics": "enabled",
+    };
+  }
+
+  return metadata;
 }
 
 export default async function RootLayout({
