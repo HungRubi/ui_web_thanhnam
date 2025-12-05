@@ -96,7 +96,7 @@ export default function Home() {
 
       <div className="container mx-auto px-3 mt-5">
         <div className="w-full text-center">
-          <p className="font-bold text-xl mb-5 leading-1 text-gray-700 md:text-3xl sm:text-2xl xl:text-[35px]">
+          <p className="font-bold text-xl mb-5 leading-1 max-[500px]:leading-normal text-gray-700 md:text-3xl sm:text-2xl xl:text-[35px]">
             Shop Now With Thousands Of Discount Codes
           </p>
           <p className="font-bold text-base leading-none text-gray-700">

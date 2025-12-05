@@ -27,7 +27,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   
   try {
-    // Fetch store via the API proxy to get metadata
     const base = getApiBase();
     const res = await fetch(`${base}/api/store/${encodeURIComponent(slug)}`, {
       cache: "no-store",

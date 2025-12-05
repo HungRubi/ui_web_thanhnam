@@ -141,7 +141,7 @@ export default function Store () {
                             <div className="bg-amber-50 px-2.5 py-1 my-2">
                                 <p className="text-amber-400">Rate it</p>
                             </div>
-                            <ModalCoupon btn={true} offers={offers} storeUrl={`/store/${store.slug}`} />
+                            <ModalCoupon btn={true} offers={offers} store={store} />
                         </div>
                         <div className="bg-white mt-2.5 p-4 text-sm text-gray-700 shadow">
                             <p className="font-bold line-clamp-2 mb-3">
@@ -197,7 +197,7 @@ export default function Store () {
                                         </p>
                                     </div>
                                         <div className="w-[235px] flex-none flex justify-center">
-                                            <ModalCoupon btn={false} offers={offers} storeUrl={`/store/${store.slug}`} />
+                                            <ModalCoupon btn={false} offers={offers} store={store} />
                                         </div>
                                 </div>
                             ))

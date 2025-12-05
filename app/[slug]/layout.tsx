@@ -37,7 +37,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     
     const result = await res.json();
     const event = result.data;
-    console.log(event)
     if (!event) return { title: "Event" };
     
     return {

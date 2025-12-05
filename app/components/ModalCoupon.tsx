@@ -3,40 +3,44 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import React from "react";
+import { useGlobalConfig } from "@/hooks/useGlobalConfig";
+import Link from "next/link";
+
 type ModalCouponProps = {
     btn: boolean,
     offers?: any[],
-    storeUrl?: string,
+    store?: any,
 }
 
-
-
-const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], storeUrl}) => {
+const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const [selectedOffer, setSelectedOffer] = useState<any | null>(null);
+    const { data } = useGlobalConfig();
 
     const handleOpen = () => {
         // pick random offer when opening
         if (offers && offers.length > 0) {
             const idx = Math.floor(Math.random() * offers.length);
-            setSelectedOffer(offers[idx]);
+            const offer = offers[idx];
+            setSelectedOffer(offer);
+            // open offer url in new tab
+            if (offer?.url) {
+                window.open(offer.url, '_blank');
+            }
         } else {
             setSelectedOffer(null);
         }
-
         setIsOpen(true);
-        // Trigger animation after modal is mounted
         setTimeout(() => setIsAnimating(true), 10);
     };
 
     const handleClose = () => {
         setIsAnimating(false);
-        // Wait for animation to complete before unmounting
         setTimeout(() => {
             setCoppy(0);
             setIsOpen(false);
-            setIsAnimating(false); // Reset for next open
+            setIsAnimating(false); 
         }, 300);
     };
     const inputRef = useRef<HTMLInputElement>(null);
@@ -45,20 +49,8 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], storeUrl}) =
         if (selectedOffer && selectedOffer.code) {
             navigator.clipboard.writeText(selectedOffer.code);
             setCoppy(1);
-            // open offer url if present
-            if (selectedOffer.url) {
-                window.open(selectedOffer.url, "_blank");
-            }
-            alert("Copied: " + selectedOffer.code);
             return;
         }
-
-        // no offer: if storeUrl provided, navigate to it
-        if (storeUrl) {
-            window.open(storeUrl, "_blank");
-            return;
-        }
-        alert("No coupon available");
     };
 
     return (
@@ -90,7 +82,8 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], storeUrl}) =
             {isOpen && (
                 <div
                     onClick={handleClose}
-                    className="fixed inset-0 z-10 grid h-screen w-screen place-items-center bg-[#00000060] bg-opacity-60 backdrop-blur-sm transition-opacity duration-300"
+                    className="fixed inset-0 z-10 grid h-screen w-screen place-items-center bg-[#00000060] 
+                    bg-opacity-60 backdrop-blur-sm transition-opacity duration-300 max-[435px]:flex max-[435px]:justify-center"
                 >
                     <div
                         onClick={(e) => e.stopPropagation()}
@@ -104,12 +97,12 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], storeUrl}) =
                             <Image
                                 width={300}
                                 height={300}
-                                src={"/store/1.jpg"}
+                                src={`${process.env.NEXT_PUBLIC_API_URL}/${store.image}`}
                                 alt="store"
                                 className="w-25 h-25 rounded-[50%] border border-gray-200"
                             />
                             <p className="text-2xl line-clamp-2 max-w-[65%] font-medium text-gray-700">
-                                Up to $25 Off Site-wide
+                                {store?.tenstore || selectedOffer?.tenstore || "Up to $25 Off Site-wide"}
                             </p>
                         </div>
                             <div className="flex flex-col items-center relative border-t border-slate-200 py-4 leading-normal text-slate-600 font-light">
@@ -141,32 +134,15 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], storeUrl}) =
                                     </div>
                                 </>
                             ) : (
-                                <>
-                                    <p className="my-4 text-center">No coupons available at the moment.</p>
-                                    <div className="h-12 flex items-center justify-center">
-                                        <input 
-                                            ref={inputRef}
-                                            type="text"
-                                            name="coupon"
-                                            readOnly 
-                                            className="h-full max-w-60 text-[22px] font-medium bg-[#e9ecef] border border-dashed text-center"
-                                            style={{borderColor: "#019a04"}}
-                                            value={""}
-                                        />
-                                        <button 
-                                            className="capitalize px-6 h-full bg-[#019a04] text-white cursor-pointer"
-                                            onClick={handleCopy}
-                                        >
-                                            Visit store
-                                        </button>
-                                    </div>
-                                </>
+                                <div className="w-full h-full">
+                                    <p className="mt-10 text-center">No coupons available at the moment.</p>
+                                </div>
                             )}
                             <div className="mt-8">
                                 <Image
                                     width={300}
                                     height={150}
-                                    src={"/images/logo.jpg"}
+                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.logo}`}
                                     alt="logo"
                                     className="w-25 object-cover"
                                 />

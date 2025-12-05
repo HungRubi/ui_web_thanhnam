@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
       },
       cache: "no-store",
     });
-    console.log(response)
     if (!response.ok) {
       const errorText = await response.text();
       console.error("API Error:", response.status, errorText);
