@@ -52,7 +52,7 @@ export default async function CategoryPage(props: { params: Promise<{ slug: stri
                                                 <Image
                                                     width={90}
                                                     height={90}
-                                                    src={store.image || "/store/1.jpg"}
+                                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${store.image}` || "/store/1.jpg"}
                                                     alt={store.tenstore}
                                                     className="w-[90px] h-[90px] object-cover border border-gray-200"
                                                     unoptimized
