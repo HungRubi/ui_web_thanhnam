@@ -47,7 +47,6 @@ export async function GET(
       );
     }
 
-    // Bước 2: Dùng ID để gọi API detail từ backend
     const storeId = storeBySlug._id;
     const detailResponse = await fetch(`${API_BASE_URL}/store/${storeId}`, {
       method: "GET",
