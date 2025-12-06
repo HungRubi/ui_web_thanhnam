@@ -6,7 +6,7 @@ import React from "react";
 import { useGlobalConfig } from "@/hooks/useGlobalConfig";
 
 type ModalCouponProps = {
-    btn: boolean,
+    btn: number,
     offers?: any[],
     store?: any,
 }
@@ -111,7 +111,7 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
 
     return (
         <>
-            {btn ? 
+            {btn === 0 && 
                 <button 
                     onClick={handleOpen}
                     className="capitalize text-[#019a04] my-4 font-medium px-6 py-1 border border-[#019a04] rounded-md transition hover:bg-[#019a04] hover:text-white"
@@ -119,7 +119,8 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
                 >
                     Get Coupon Alert
                 </button>
-                : 
+            }
+            {btn === 1 &&
                 <div className="w-[235px] flex-none flex justify-center">
                     <button 
                         className="w-[180px] text-right h-10 border-2 border-dashed rounded-md relative text-xl text-[#019a04] group" 
@@ -134,6 +135,14 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
                         </div> 
                     </button>
                 </div>
+            }
+            {btn === 2 && 
+                <button 
+                    className="text-[#019a04] cursor-pointer"
+                    onClick={handleOpen}
+                >
+                    {store.tenstore}
+                </button>
             }
             {isOpen && (
                 <div
