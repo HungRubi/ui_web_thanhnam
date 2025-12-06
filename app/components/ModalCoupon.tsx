@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import React from "react";
 import { useGlobalConfig } from "@/hooks/useGlobalConfig";
-import Link from "next/link";
 
 type ModalCouponProps = {
     btn: boolean,
@@ -23,17 +22,74 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
         if (offers && offers.length > 0) {
             const idx = Math.floor(Math.random() * offers.length);
             const offer = offers[idx];
-            setSelectedOffer(offer);
-            // open offer url in new tab
+
+            // If we have an offer URL, use the "duplicate tab" trick:
+            // 1) Open a new tab pointing to the current page with a query param indicating which offer to open
+            // 2) Immediately navigate THIS (original) tab to the offer URL
+            // The duplicate tab will read the query param and open the modal there.
             if (offer?.url) {
-                window.open(offer.url, '_blank');
+                try {
+                    const sep = window.location.search ? '&' : '?';
+                    const dupUrl = `${window.location.href}${sep}coupon_open=1&coupon_idx=${idx}`;
+                    const dup = window.open(dupUrl, '_blank', 'noopener,noreferrer');
+                    if (dup) {
+                        try { dup.opener = null; } catch (e) { /* ignore */ }
+                    }
+                    // navigate original tab to the offer URL (user will see the duplicated tab)
+                    window.location.href = offer.url;
+                    // after this line, the current page will start navigating away.
+                    return;
+                } catch (e) {
+                    // fallback: try a normal anchor click (best-effort)
+                    try {
+                        const a = document.createElement('a');
+                        a.href = offer.url;
+                        a.target = '_blank';
+                        a.rel = 'noopener noreferrer';
+                        a.style.display = 'none';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    } catch (err) {
+                        // last fallback: window.open (may grab focus)
+                        try { window.open(offer.url, '_blank', 'noopener,noreferrer'); } catch (er) { /* ignore */ }
+                    }
+                }
             }
+
+            setSelectedOffer(offer);
         } else {
             setSelectedOffer(null);
         }
+
         setIsOpen(true);
         setTimeout(() => setIsAnimating(true), 10);
     };
+
+    // Auto-open modal when this page is loaded with coupon_open=1 and coupon_idx is present
+    useEffect(() => {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const open = params.get('coupon_open');
+            const idx = params.get('coupon_idx');
+            if (open === '1' && idx !== null && offers && offers.length > 0) {
+                const i = parseInt(idx, 10);
+                if (!Number.isNaN(i) && offers[i]) {
+                    setSelectedOffer(offers[i]);
+                    setIsOpen(true);
+                    // animate after mount
+                    setTimeout(() => setIsAnimating(true), 10);
+                    // remove coupon params from URL to avoid reopening on reload
+                    params.delete('coupon_open');
+                    params.delete('coupon_idx');
+                    const base = window.location.pathname + (params.toString() ? `?${params.toString()}` : '');
+                    window.history.replaceState(null, '', base + window.location.hash);
+                }
+            }
+        } catch (e) {
+            // ignore
+        }
+    }, [offers]);
 
     const handleClose = () => {
         setIsAnimating(false);
