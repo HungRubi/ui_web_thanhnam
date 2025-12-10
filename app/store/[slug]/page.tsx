@@ -176,24 +176,26 @@ export default function Store () {
                         {/* Offers list: render backend offers if present, otherwise show example blocks */}
                         {offers && offers.length > 0 ? (
                             offers.map((o: any, i: number) => (
-                                <div key={o._id || i} className="w-full bg-white flex p-2.5 min-h-[130px] items-center mb-4 shadow rounded">
-                                    <div className="w-[110px] flex-none h-[130px] flex items-center border-r border-dashed" style={{ borderColor: "#e7e7e7" }}>
-                                        <p className="text-[22px] font-black text-[#019a04]">{o.offer || "Deal"}</p>
-                                    </div>
-                                    <div className="w-full flex flex-col justify-start h-[130px] ml-2.5">
-                                        <p className="text-[#019a04] font-bold">{o.verified === "Yes" ? "Verified Code" : "Deal"}</p>
-                                        <h2 className="text-xl font-bold text-gray-700 my-4">
-                                            <Link href={o.url || "#"} target={o.url ? "_blank" : undefined}>
-                                                {o.name || o.description || `Offer ${i + 1}`}
-                                            </Link>
-                                        </h2>
-                                        <p className="min-w-9/10 text-sm text-gray-600 tracking-wide">
-                                            {o.description || "No description available."}
-                                        </p>
-                                    </div>
-                                        <div className="w-[235px] flex-none flex justify-center">
-                                            <ModalCoupon btn={1} offers={offers} store={store} />
+                                <div key={o._id || i} className="w-full bg-white flex p-2.5 min-h-[130px] max-[450px]:flex-col items-center mb-4 shadow rounded">
+                                    <div className="flex items-center">
+                                        <div className="w-[110px] flex-none h-[130px] flex items-center border-r border-dashed" style={{ borderColor: "#e7e7e7" }}>
+                                            <p className="text-[22px] font-black text-[#019a04]">{o.offer || "Deal"}</p>
                                         </div>
+                                        <div className="w-full flex flex-col justify-start h-[130px] ml-2.5">
+                                            <p className="text-[#019a04] font-bold  truncate">{o.verified === "Yes" ? "Verified Code" : "Deal"}</p>
+                                            <h2 className="text-xl font-bold text-gray-700 my-4 max-[450px]:my-2 line-clamp-1">
+                                                <Link href={o.url || "#"} target={o.url ? "_blank" : undefined}>
+                                                    {o.name || o.description || `Offer ${i + 1}`}
+                                                </Link>
+                                            </h2>
+                                            <p className="min-w-9/10 text-sm text-gray-600 tracking-wide line-clamp-2">
+                                                {o.description || "No description available."}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="w-[235px] flex-none flex justify-center max-[450px]:ml-10">
+                                        <ModalCoupon btn={1} offers={offers} store={store} />
+                                    </div>
                                 </div>
                             ))
                         ) : (
