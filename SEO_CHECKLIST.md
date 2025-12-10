@@ -9,11 +9,11 @@
 
 - [x] **Verify Sitemap Generation**
   - [ ] Run `npm run build`
-  - [ ] Check: `https://sshub999.com/sitemap.xml`
+  - [ ] Check: `http://localhost:3000/sitemap.xml`
   - [ ] Verify stores, news, categories are listed
 
 - [x] **Verify Robots.txt**
-  - [ ] Check: `https://sshub999.com/robots.txt`
+  - [ ] Check: `http://localhost:3000/robots.txt`
   - [ ] Ensure sitemap URL is present
   - [ ] Verify disallow rules
 
@@ -130,16 +130,16 @@ npm run build
 npm start
 
 # In another terminal, test endpoints:
-curl https://sshub999.com/sitemap.xml
-curl https://sshub999.com/robots.txt
+curl http://localhost:3000/sitemap.xml
+curl http://localhost:3000/robots.txt
 ```
 
 ### Testing URLs
-- Homepage: https://sshub999.com
-- Sitemap: https://sshub999.com/sitemap.xml
-- Robots: https://sshub999.com/robots.txt
-- Sample blog: https://sshub999.com/blog/[slug]
-- Sample store: https://sshub999.com/store/[slug]
+- Homepage: http://localhost:3000
+- Sitemap: http://localhost:3000/sitemap.xml
+- Robots: http://localhost:3000/robots.txt
+- Sample blog: http://localhost:3000/blog/[slug]
+- Sample store: http://localhost:3000/store/[slug]
 
 ### External Testing Tools
 1. **Lighthouse**: Chrome DevTools → Lighthouse
@@ -176,7 +176,7 @@ curl https://sshub999.com/robots.txt
 ## ❓ Common Questions
 
 ### Q: How do I test if sitemap is working?
-A: Visit `https://sshub999.com/sitemap.xml` - should show XML with URLs
+A: Visit `http://localhost:3000/sitemap.xml` - should show XML with URLs
 
 ### Q: How do I submit sitemap to Google?
 A: Google Search Console → Sitemaps → Add your sitemap URL

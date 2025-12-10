@@ -11,7 +11,7 @@ export const getSeoConfig = async (): Promise<SeoConfig | null> => {
       headers: {
         "Content-Type": "application/json",
       },
-      cache: "no-store",
+      next: { revalidate: 3600 }, // Cache for 1 hour
     });
 
     if (!response.ok) {
