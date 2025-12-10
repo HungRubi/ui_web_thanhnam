@@ -81,22 +81,22 @@ const Footer = () => {
                     </h3>
                     <ul className="list-none mt-4">
                         <li className="mb-2">
-                            <Link href="/page/welcome-to-sshub999-coupons" className="text-white hover:text-red-500 transition text-sm">
+                            <Link href="/page/privacy-policy" className="text-white hover:text-red-500 transition text-sm">
                                 About Us
                             </Link>
                         </li>
                         <li className="mb-2">
-                            <Link href="/page/welcome-to-sshub999-coupons" className="text-white hover:text-red-500 transition text-sm">
+                            <Link href="/page/privacy-policy" className="text-white hover:text-red-500 transition text-sm">
                                Contact Us
                             </Link>
                         </li>
                         <li className="mb-2">
-                            <Link href="/page/welcome-to-sshub999-coupons" className="text-white hover:text-red-500 transition text-sm">
+                            <Link href="/page/privacy-policy" className="text-white hover:text-red-500 transition text-sm">
                                 Help Center
                             </Link>
                         </li>
                         <li className="mb-2">
-                            <Link href="/page/welcome-to-sshub999-coupons" className="text-white hover:text-red-500 transition text-sm">
+                            <Link href="/page/privacy-policy" className="text-white hover:text-red-500 transition text-sm">
                                 Press
                             </Link>
                         </li>
@@ -114,22 +114,22 @@ const Footer = () => {
                     </h3>
                     <ul className="list-none mt-4">
                         <li className="mb-2">
-                            <Link href="/page/welcome-to-sshub999-coupons" className="text-white hover:text-red-500 transition text-sm">
+                            <Link href="/page/privacy-policy" className="text-white hover:text-red-500 transition text-sm">
                                 Terns Of Use
                             </Link>
                         </li>
                         <li className="mb-2">
-                            <Link href="/page/welcome-to-sshub999-coupons" className="text-white hover:text-red-500 transition text-sm">
+                            <Link href="/page/privacy-policy" className="text-white hover:text-red-500 transition text-sm">
                                Privacy Policy
                             </Link>
                         </li>
                         <li className="mb-2">
-                            <Link href="/page/welcome-to-sshub999-coupons" className="text-white hover:text-red-500 transition text-sm">
+                            <Link href="/page/privacy-policy" className="text-white hover:text-red-500 transition text-sm">
                                 Disclosure Policy
                             </Link>
                         </li>
                         <li className="mb-2">
-                            <Link href="/page/welcome-to-sshub999-coupons" className="text-white hover:text-red-500 transition text-sm">
+                            <Link href="/page/privacy-policy" className="text-white hover:text-red-500 transition text-sm">
                                 Cookie Policy
                             </Link>
                         </li>
