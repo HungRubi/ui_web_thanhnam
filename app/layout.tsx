@@ -4,6 +4,7 @@ import "./globals.css";
 import StoreProvider from "@/components/StoreProvider";
 import { getSeoConfig } from "@/lib/server/seoConfig";
 import { fetchGlobalConfig } from "@/lib/api";
+import { generateOrganizationSchema, generateWebsiteSchema } from "@/lib/schemaOrg";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,19 @@ export async function generateMetadata(): Promise<Metadata> {
     title: seo?.metaTitle || DEFAULT_META.title,
     description: seo?.metaDescription || DEFAULT_META.description,
     keywords: seo?.metaKeywords,
+    viewport: "width=device-width, initial-scale=1, maximum-scale=5",
+    robots: "index, follow",
+    openGraph: {
+      type: "website",
+      title: seo?.metaTitle || DEFAULT_META.title,
+      description: seo?.metaDescription || DEFAULT_META.description,
+      siteName: seo?.metaTitle || DEFAULT_META.title,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo?.metaTitle || DEFAULT_META.title,
+      description: seo?.metaDescription || DEFAULT_META.description,
+    },
   };
 
   if (favicon) {
@@ -60,13 +74,48 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const seoConfig = await getSeoConfig();
+  const globalConfig = await fetchGlobalConfig();
 
   return (
     <html lang="en">
       <head>
+        {/* Meta Tags */}
         {seoConfig?.metaKeywords && (
           <meta name="keywords" content={seoConfig.metaKeywords} />
         )}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#ffffff" />
+        
+        {/* Structured Data - Organization Schema */}
+        {globalConfig && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(
+                generateOrganizationSchema(
+                  globalConfig.nameCompany || "Company",
+                  globalConfig.logo ? `${process.env.NEXT_PUBLIC_API_URL}/${globalConfig.logo}` : "",
+                  globalConfig.slogan || ""
+                )
+              ),
+            }}
+          />
+        )}
+
+        {/* Structured Data - Website Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              generateWebsiteSchema(
+                seoConfig?.metaTitle || DEFAULT_META.title,
+                process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com"
+              )
+            ),
+          }}
+        />
+
+        {/* Google Analytics */}
         {seoConfig?.googleAnalyticCode && (
           <script
             dangerouslySetInnerHTML={{
@@ -79,6 +128,14 @@ export default async function RootLayout({
               `,
             }}
           />
+        )}
+
+        {/* Preconnect to external domains for performance */}
+        {process.env.NEXT_PUBLIC_API_URL && (
+          <>
+            <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL} />
+            <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL} />
+          </>
         )}
       </head>
       <body

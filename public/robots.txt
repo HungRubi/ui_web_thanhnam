@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sshub999.com/sitemap.xml
