@@ -116,7 +116,7 @@ export default function Store () {
                         <div className="w-full flex items-center justify-center bg-white flex-col shadow">
                             <div className="h-[150px]">
                                 <Image
-                                    src={storeImageSrc}
+                                    src={storeImageSrc || "/store/1.jpg"}
                                     alt={store?.tenstore}
                                     width={300}
                                     height={300}

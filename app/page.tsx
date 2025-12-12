@@ -63,7 +63,7 @@ export default function Home() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8 w-full">
           <div className="w-full flex flex-col items-center">
             <Image
-              src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.logo}`}
+              src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.logo}` || "images/logo.jpg"}
               alt={data?.nameCompany || "Store"}
               width={300}
               height={170}
@@ -102,7 +102,7 @@ export default function Home() {
               <SwiperSlide key={idx}>
                 <Link href={slide.href} target="_blank" rel="noopener noreferrer">
                   <Image
-                    src={slide.src}
+                    src={slide.src || "/slides/1.png"}
                     alt={slide.alt}
                     width={3000}
                     height={1500}
@@ -166,7 +166,7 @@ export default function Home() {
                         className="overflow-hidden"
                       >
                         <Image
-                          src={item.img}
+                          src={item.img || "/store/1.jpg"}
                           alt={item.name || "Store"}
                           width={200}
                           height={200}

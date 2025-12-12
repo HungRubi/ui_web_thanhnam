@@ -162,7 +162,7 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
                             <Image
                                 width={300}
                                 height={300}
-                                src={`${process.env.NEXT_PUBLIC_API_URL}/${store.image}`}
+                                src={`${process.env.NEXT_PUBLIC_API_URL}/${store.image}` || "/store/1.jpg"}
                                 alt="store"
                                 className="w-25 h-25 rounded-[50%] border border-gray-200"
                             />
@@ -207,7 +207,7 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
                                 <Image
                                     width={300}
                                     height={150}
-                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.logo}`}
+                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.logo}` || "/images/logo.jpg"}
                                     alt="logo"
                                     className="w-25 object-cover"
                                 />

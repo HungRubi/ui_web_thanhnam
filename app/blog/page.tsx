@@ -30,7 +30,7 @@ const Blog = () => {
                       <Image
                           width={3000}
                           height={3000}
-                          src={featuredImageSrc}
+                          src={featuredImageSrc || "/news/1.jpg"}
                           alt={featuredNews.name}
                           className="w-full h-full object-cover"
                           unoptimized={isFeaturedExternal}
