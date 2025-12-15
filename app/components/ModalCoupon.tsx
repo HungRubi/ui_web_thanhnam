@@ -176,7 +176,14 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
                                 <>
                                     <p className="my-4">
                                         Copy the code and go to
-                                        <span className="text-[#019a04] ml-1.5">{store.tenstore || 'the store'}</span>
+                                        <Link 
+                                            href={selectedOffer.url} 
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={handleCopy}
+                                            className="text-[#019a04] ml-1.5">
+                                            {store.tenstore || 'the store'}
+                                        </Link>
                                     </p>
                                     <div className="h-12 flex items-center justify-center">
                                         <input 
@@ -188,12 +195,15 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
                                             style={{borderColor: "#019a04"}}
                                             value={selectedOffer.code || selectedOffer.offer || ''}
                                         />
-                                        <button 
-                                            className="capitalize px-6 h-full bg-[#019a04] text-white cursor-pointer"
+                                        <Link 
+                                            href={selectedOffer.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="capitalize px-6 h-full flex items-center justify-center bg-[#019a04] text-white cursor-pointer"
                                             onClick={handleCopy}
                                         >
                                             {coppy === 1 ? "Copied!" : "Tap to copy"}
-                                        </button>
+                                        </Link>
                                     </div>
                                     <Link 
                                         href={`/store/${store.slug}`} 

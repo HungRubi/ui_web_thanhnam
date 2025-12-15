@@ -21,7 +21,7 @@ const ProductCard: FC<ProductCardProps> = ({title, img, oldPrice, newPrice, onDe
       <div className="absolute left-2 top-2 text-red-500 text-xl">
         ⚡
       </div>
-      <div className="w-full h-[180px] flex items-center justify-center mb-3">
+      <div className="w-full h-[180px] flex items-center justify-center mb-3" onClick={onDeal}>
         <Image
           src={imageSrc}
           alt={title}
@@ -31,7 +31,7 @@ const ProductCard: FC<ProductCardProps> = ({title, img, oldPrice, newPrice, onDe
           unoptimized={isExternalImage}
         />
       </div>
-      <p className="font-medium text-gray-800 text-[15px] leading-tight line-clamp-4 mb-2">
+      <p className="font-medium text-gray-800 text-[15px] leading-tight line-clamp-3 mb-2" onClick={onDeal}>
         {title}
       </p>
       <div className="flex items-center gap-2 mb-3 justify-between">

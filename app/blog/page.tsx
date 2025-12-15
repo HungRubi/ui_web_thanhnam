@@ -8,12 +8,14 @@ import Footer from "../components/Footer"
 import Header from "../components/Header"
 import { useNews } from "@/hooks/useNews"
 import { resolveImageUrl } from "@/utils/image";
+import { useGlobalConfig } from "@/hooks/useGlobalConfig";
 
 const getImageUrl = (imagePath?: string): string =>
   resolveImageUrl(imagePath, { fallback: "/store/1.jpg" });
 
 const Blog = () => {
     const { news, loading, error } = useNews();
+    const { data } = useGlobalConfig();
     const featuredNews = news.filter(item => item.duyet === "Yes")[0];
     const featuredImageSrc = featuredNews ? getImageUrl(featuredNews.image) : "";
     const isFeaturedExternal = featuredImageSrc.startsWith("http://") || featuredImageSrc.startsWith("https://");

@@ -8,16 +8,16 @@ import Footer from "@/app/components/Footer"
 import NewsCard from "@/app/components/NewsCard"
 import { useNewsById, useNews } from "@/hooks/useNews"
 import { useParams } from "next/navigation"
-
-
+import { useGlobalConfig } from "@/hooks/useGlobalConfig";
+import Loader from "@/app/components/Loader";
 const DetailNew = () => {
     const params = useParams();
+    const { data } = useGlobalConfig();
     const slug = params?.slug as string;
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [slugNotFound, setSlugNotFound] = useState(false);
     const { news: allNews, loading: newsLoading } = useNews();
     const { news: currentNews, loading, error } = useNewsById(selectedId || undefined, !!selectedId);
-    
     useEffect(() => {
         if (!slug || selectedId) return;
         if (allNews.length === 0) {
@@ -53,7 +53,7 @@ const DetailNew = () => {
         if (newsLoading) {
             return (
                 <div className="w-full min-h-screen flex items-center justify-center">
-                    <p className="text-gray-500">Đang tải bài viết...</p>
+                    <Loader/>
                 </div>
             );
         }
@@ -61,7 +61,7 @@ const DetailNew = () => {
         if (slugNotFound) {
             return (
                 <div className="w-full min-h-screen flex items-center justify-center">
-                    <p className="text-red-500">Không tìm thấy bài viết</p>
+                    <Loader/>
                 </div>
             );
         }
@@ -70,7 +70,7 @@ const DetailNew = () => {
     if (loading) {
         return (
             <div className="w-full min-h-screen flex items-center justify-center">
-                <p className="text-gray-500">Đang tải bài viết...</p>
+                <Loader/>
             </div>
         );
     }
@@ -90,14 +90,14 @@ const DetailNew = () => {
                 <div className="container mx-auto px-3 mt-12">
                     <div className="flex items-center justify-start gap-2 flex-col sm:flex-row">
                         <Link href={"/"} className="text-[#019a04]">
-                            Blog
+                            Home
                             <span className="text-[#019a04]"> / </span>
                         </Link>
                         <Link href={`/blog`} className="text-[#019a04]">
-                            {currentNews.name}
+                            Blog
                             <span className="text-[#019a04]"> / </span>
                         </Link>
-                        <Link href={`/blog/${currentNews.slug}`} className="text-gray-500">
+                        <Link href={`/blog/${currentNews.slug}`} className="text-[#019a04]">
                             {currentNews.name}
                         </Link>
                     </div>
@@ -113,7 +113,7 @@ const DetailNew = () => {
                                 width={40}
                                 height={40}
                                 alt="logo"
-                                src={"/images/icon.png"}
+                                src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.favicon}` || "/images/icon.png"}
                                 className="w-10 h-10 object-cover"
                             />
                             <p className="text-sm text-gray-400">
@@ -126,7 +126,7 @@ const DetailNew = () => {
                             dangerouslySetInnerHTML={{ __html: currentNews.content }}
                           />
                         )}
-                        {!currentNews.content && currentNews.description && (
+                        {currentNews.description && (
                           <p className="leading-8 text-gray-700">
                             {currentNews.description}
                           </p>

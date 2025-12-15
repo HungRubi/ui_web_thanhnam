@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FC } from "react";
 import { resolveImageUrl } from "@/utils/image";
+import { useGlobalConfig } from "@/hooks/useGlobalConfig";
 
 type NewsCardProps = {
   title: string;
@@ -28,6 +29,9 @@ const NewsCard: FC<NewsCardProps> = ({
 }) => {
     const imageSrc = resolveImageUrl(img, { fallback: "/news/1.jpg" });
     const isExternalImage = imageSrc.startsWith("http://") || imageSrc.startsWith("https://");
+
+    const { data } = useGlobalConfig();
+    
     return (
       <div className={`border border-gray-200 rounded-lg px-3 bg-white shadow-sm hover:shadow-md transition 
       w-[calc(100%/5-8px)] relative ${className} max-[450px]:w-full`}>
@@ -49,7 +53,7 @@ const NewsCard: FC<NewsCardProps> = ({
             width={40}
             height={40}
             alt="logo"
-            src={"/images/icon.png"}
+            src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.favicon}` || '/images/icon.png'}
             className="w-10 h-10 object-cover"
           />
           <p className="text-sm text-gray-400">{formatDate || "2 days ago"}</p>
