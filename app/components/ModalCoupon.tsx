@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import React from "react";
 import { useGlobalConfig } from "@/hooks/useGlobalConfig";
+import Link from "next/link";
 
 type ModalCouponProps = {
     btn: number,
@@ -166,8 +167,8 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
                                 alt="store"
                                 className="w-25 h-25 rounded-[50%] border border-gray-200"
                             />
-                            <p className="text-2xl line-clamp-2 max-w-[65%] font-medium text-gray-700">
-                                {store?.tenstore || selectedOffer?.tenstore || "Up to $25 Off Site-wide"}
+                            <p className="text-lg line-clamp-1 max-w-[65%] font-medium text-gray-700">
+                                {selectedOffer.name || "My coupon"}
                             </p>
                         </div>
                             <div className="flex flex-col items-center relative border-t border-slate-200 py-4 leading-normal text-slate-600 font-light">
@@ -175,7 +176,7 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
                                 <>
                                     <p className="my-4">
                                         Copy the code and go to
-                                        <span className="text-[#019a04] ml-1.5">{selectedOffer.name || 'the store'}</span>
+                                        <span className="text-[#019a04] ml-1.5">{store.tenstore || 'the store'}</span>
                                     </p>
                                     <div className="h-12 flex items-center justify-center">
                                         <input 
@@ -194,9 +195,13 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
                                             {coppy === 1 ? "Copied!" : "Tap to copy"}
                                         </button>
                                     </div>
-                                    <div className="mt-8 text-[#019a04] capitalize">
-                                        more {selectedOffer.name || 'store'} &gt; &gt;
-                                    </div>
+                                    <Link 
+                                        href={`/store/${store.slug}`} 
+                                        className="mt-8 text-[#019a04] capitalize"
+                                        onClick={() => setIsOpen(false)}
+                                    >
+                                        more {store.tenstore || 'store'} &gt; &gt;
+                                    </Link>
                                 </>
                             ) : (
                                 <div className="w-full h-full">

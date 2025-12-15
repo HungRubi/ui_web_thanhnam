@@ -12,6 +12,7 @@ import Header from "@/app/components/Header";
 import { useContentConfig } from "@/hooks/useContentConfig";
 import { useMemo } from "react";
 import { useStores } from "@/hooks/useStores";
+import Loader from "@/app/components/Loader";
 const {FaStar} = icons
 
 const getImageUrl = (imagePath?: string): string => {
@@ -93,7 +94,7 @@ export default function Store () {
     if (loading) {
         return (
             <div className="w-full min-h-screen flex items-center justify-center">
-                <p className="text-gray-500">Đang tải thông tin store...</p>
+                <Loader />
             </div>
         );
     }
@@ -101,7 +102,7 @@ export default function Store () {
     if (error || !store) {
         return (
             <div className="w-full min-h-screen flex items-center justify-center">
-                <p className="text-red-500">Lỗi: {error || "Không tìm thấy store"}</p>
+                <Loader />
             </div>
         );
     }
