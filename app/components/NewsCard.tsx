@@ -34,7 +34,7 @@ const NewsCard: FC<NewsCardProps> = ({
     
     return (
       <div className={`border border-gray-200 rounded-lg px-3 bg-white shadow-sm hover:shadow-md transition 
-      w-[calc(100%/5-8px)] relative ${className} max-[450px]:w-full`}>
+      w-[calc(100%/5-8px)] relative ${className} max-[450px]:w-full  max-[650px]:w-[calc(100%/2-7px)] max-[900px]:w-[calc(100%/3-7px)]`}>
         <Link 
           href={link}
           className="w-full h-[180px] flex items-center justify-center mb-3"
