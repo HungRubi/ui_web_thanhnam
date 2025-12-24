@@ -125,31 +125,52 @@ export default async function Search({ searchParams }: Props) {
                                     const totalItems = stores.length;
                                     const totalPagesComputed = Math.max(1, Math.ceil(totalItems / perPage));
                                     const pages = Array.from({ length: totalPagesComputed }, (_, i) => i + 1);
+
+                                    const visible: (number | 'ellipsis')[] = [];
+                                    const maxButtons = 7;
+                                    if (totalPagesComputed <= maxButtons) {
+                                        visible.push(...pages);
+                                    } else {
+                                        if (page <= 4) {
+                                            visible.push(1, 2, 3, 4, 5, 'ellipsis', totalPagesComputed);
+                                        } else if (page >= totalPagesComputed - 3) {
+                                            visible.push(1, 'ellipsis', totalPagesComputed - 4, totalPagesComputed - 3, totalPagesComputed - 2, totalPagesComputed - 1, totalPagesComputed);
+                                        } else {
+                                            visible.push(1, 'ellipsis', page - 1, page, page + 1, 'ellipsis', totalPagesComputed);
+                                        }
+                                    }
+
                                     return (
-                                        <div className="w-full flex items-center justify-center gap-2 mt-6">
+                                        <div className="w-full flex items-center justify-center gap-2 mt-6 overflow-x-auto">
                                             {page > 1 && (
                                                 <Link
                                                     href={`/search?timkiem=${encodeURIComponent(qTrim)}&page=${page - 1}`}
                                                     className="px-3 py-1 border border-gray-300 text-green-600 rounded"
                                                 >
-                                                    Prev
+                                                    &lt;
                                                 </Link>
                                             )}
-                                            {pages.map((p) => (
-                                                <Link
-                                                    key={p}
-                                                    href={`/search?timkiem=${encodeURIComponent(qTrim)}&page=${p}`}
-                                                    className={`px-3 py-1 border border-gray-300 text-green-600 rounded ${p === page ? 'bg-[#019a04] text-white' : ''}`}
-                                                >
-                                                    {p}
-                                                </Link>
+
+                                            {visible.map((p, i) => (
+                                                typeof p === 'number' ? (
+                                                    <Link
+                                                        key={i}
+                                                        href={`/search?timkiem=${encodeURIComponent(qTrim)}&page=${p}`}
+                                                        className={`px-3 py-1 border border-gray-300 text-green-600 rounded ${p === page ? 'bg-[#019a04] text-white' : ''}`}
+                                                    >
+                                                        {p}
+                                                    </Link>
+                                                ) : (
+                                                    <span key={i} className="px-2 text-gray-400">...</span>
+                                                )
                                             ))}
+
                                             {page < totalPagesComputed && (
                                                 <Link
                                                     href={`/search?timkiem=${encodeURIComponent(qTrim)}&page=${page + 1}`}
                                                     className="px-3 py-1 border border-gray-300 text-green-600 rounded"
                                                 >
-                                                    Next
+                                                    &gt;
                                                 </Link>
                                             )}
                                         </div>
