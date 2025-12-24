@@ -16,7 +16,7 @@ export default function RelatedCategories() {
   }, [categories.length, dispatch]);
 
   return (
-    <div className="bg-white shadow">
+    <div className="bg-white shadow max-[500px]:w-full">
       <div className="py-4 text-center border-b border-gray-300">Related Category</div>
       <div className="w-full flex flex-col items-start text-sm text-gray">
         {categoriesLoading && <p className="p-3 text-gray-400">Đang tải category...</p>}

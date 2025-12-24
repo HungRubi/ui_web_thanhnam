@@ -20,14 +20,14 @@ export default function Home() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8 w-full">
           <div className="w-full flex flex-col items-center">
             <Image
-              src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.logo}` || "images/logo.jpg"}
+              src={`${process.env.NEXT_PUBLIC_API_URL}/${data?.logo}` || "/images/logo.jpg"}
               alt={data?.nameCompany || "Store"}
               width={300}
               height={170}
               className="max-w-[400px] w-full h-auto object-contain"
             />
             <p className="text-[12px] font-medium">
-              {data?.slogan}
+              {data?.slogan || "Leading Coupons & Deals Marketplace"}
             </p>
           </div>
 

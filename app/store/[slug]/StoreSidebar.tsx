@@ -12,14 +12,16 @@ type Props = {
 };
 
 export default function StoreSidebar({ store, offers }: Props) {
-  const storeImageSrc = store ? (store.image || "/store/1.jpg") : "/store/1.jpg";
-  const isExternalImage = storeImageSrc.startsWith("http://") || storeImageSrc.startsWith("https://");
 
   return (
     <div className="col-span-1 max-[435px]:mb-5 max-[435px]:mx-auto max-[435px]:w-full max-[435px]:col-span-full">
       <div className="w-full flex items-center justify-center bg-white flex-col shadow">
         <div className="h-[150px]">
-          <Image src={storeImageSrc} alt={store?.tenstore} width={300} height={300} className="h-full object-cover w-auto" unoptimized={isExternalImage} />
+          <Image 
+            src={`${process.env.NEXT_PUBLIC_API_URL}/${store?.image}` || ""} 
+            alt={store?.tenstore} width={300} height={300} 
+            className="h-full object-cover w-auto" 
+          />
         </div>
         <ModalCoupon btn={2} offers={offers} store={store} />
         <div className="flex items-center justify-center gap-1.5 mt-2">
