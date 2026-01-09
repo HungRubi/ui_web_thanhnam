@@ -87,7 +87,7 @@ export default function StoreContent() {
                     </div>
                   </div>
                   <div className="w-[235px] flex-none flex justify-center max-[450px]:ml-10">
-                    <ModalCoupon btn={1} offers={offers} store={store} />
+                    <ModalCoupon btn={1} offers={offers} store={store} selectedOfferIndex={i} />
                   </div>
                 </div>
               ))

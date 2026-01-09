@@ -10,24 +10,21 @@ type ModalCouponProps = {
     btn: number,
     offers?: any[],
     store?: any,
+    selectedOfferIndex?: number,
 }
 
-const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
+const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store, selectedOfferIndex}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const [selectedOffer, setSelectedOffer] = useState<any | null>(null);
     const { data } = useGlobalConfig();
 
     const handleOpen = () => {
-        // pick random offer when opening
+        // pick random offer when opening or use selected offer index if provided
         if (offers && offers.length > 0) {
-            const idx = Math.floor(Math.random() * offers.length);
+            const idx = selectedOfferIndex !== undefined ? selectedOfferIndex : Math.floor(Math.random() * offers.length);
             const offer = offers[idx];
-
-            // If we have an offer URL, use the "duplicate tab" trick:
-            // 1) Open a new tab pointing to the current page with a query param indicating which offer to open
-            // 2) Immediately navigate THIS (original) tab to the offer URL
-            // The duplicate tab will read the query param and open the modal there.
+            
             if (offer?.url) {
                 try {
                     const sep = window.location.search ? '&' : '?';
