@@ -18,8 +18,8 @@ const ProductCard: FC<ProductCardProps> = ({title, img, oldPrice, newPrice, onDe
   const isExternalImage = imageSrc.startsWith("http://") || imageSrc.startsWith("https://");
   return (
     <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition
-                w-[calc(100%/6-6px)] relative flex flex-col max-[450px]:w-full max-[650px]:w-[calc(100%/2-7px)] max-[900px]:w-[calc(100%/3-7px)]
-                max-[1380px]:w-[calc(100%/5-7px)]">
+                w-[calc(100%/6-9px)] relative flex flex-col max-[450px]:w-full max-[650px]:w-[calc(100%/2-7px)] max-[900px]:w-[calc(100%/3-7px)]
+                max-[1380px]:w-[calc(100%/5-8px)]">
       
       <div className="absolute left-2 top-2 text-red-500 text-xl">⚡</div>
 

@@ -193,7 +193,7 @@ const ModalCoupon: React.FC<ModalCouponProps> = ({btn, offers = [], store}) => {
                                             readOnly 
                                             className="h-full max-w-60 text-[22px] font-medium bg-[#e9ecef] border border-dashed text-center"
                                             style={{borderColor: "#019a04"}}
-                                            value={selectedOffer.code || selectedOffer.offer || ''}
+                                            value={selectedOffer.code || 'NO NEED CODE'}
                                         />
                                         <Link 
                                             href={selectedOffer.url}
