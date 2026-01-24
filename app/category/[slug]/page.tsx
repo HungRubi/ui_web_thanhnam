@@ -42,11 +42,11 @@ export default async function CategoryPage(props: { params: Promise<{ slug: stri
                     </div>
                 </div>
                 <div className="container px-3 mx-auto">
-                    <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-5">
-                        <div className="col-span-4 flex flex-wrap gap-5">
+                    <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-5 max-[500px]:relative">
+                        <div className="col-span-4 flex flex-wrap gap-5 max-[500px]:col-span-5">
                             {data.stores && data.stores.length > 0 ? (
                                 data.stores.map((store) => (
-                                    <div key={store._id} className="w-[calc(50%-10px)] max-h-48 bg-white border border-gray-100 shadow rounded p-3">
+                                    <div key={store._id} className="w-[calc(50%-10px)] max-h-48 bg-white border border-gray-100 shadow rounded p-3 max-[500px]:w-full">
                                         <div className="flex items-center justify-start w-full gap-x-5">
                                             <Link href={`/store/${store.slug}`} className="flex-none">
                                                 <Image
@@ -81,7 +81,7 @@ export default async function CategoryPage(props: { params: Promise<{ slug: stri
                                 <p className="text-center italic mt-20">No stores found for this category.</p>
                             )}
                         </div>
-                        <div className="col-span-1">
+                        <div className="col-span-1 max-[500px]:col-span-5">
                             <RelatedCategories />
                         </div>
                     </div>
