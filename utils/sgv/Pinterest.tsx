@@ -1,29 +1,19 @@
-import React from "react";
+import React from 'react';
 
 interface CustomIconProps {
-  size?: number | string;
-  color?: string;
-  className?: string;
+	size?: number | string;
+	color?: string;
+	className?: string;
 }
 
-const PinterestIcon: React.FC<CustomIconProps> = ({
-  size = 32,
-  color = "#fff",
-  className = "",
-}) => {
-  return (
-    <svg
-      width={size}
-      height={size}
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 102 128"
-    >
-      <path
-        transform="translate(0,128) scale(0.1,-0.1)"
-        fill={color}
-        stroke="none"
-        d="
+const PinterestIcon: React.FC<CustomIconProps> = ({ size = 32, color = '#fff', className = '' }) => {
+	return (
+		<svg width={size} height={size} className={className} xmlns='http://www.w3.org/2000/svg' viewBox='0 0 102 128'>
+			<path
+				transform='translate(0,128) scale(0.1,-0.1)'
+				fill={color}
+				stroke='none'
+				d='
           M386 1264
           c-232 -56 -395 -275 -371 -500
           12 -116 71 -198 157 -219
@@ -50,10 +40,10 @@ const PinterestIcon: React.FC<CustomIconProps> = ({
           128 128 180 381 114 557
           -26 70 -97 150 -172 195
           -108 66 -287 90 -422 57
-        "
-      />
-    </svg>
-  );
+        '
+			/>
+		</svg>
+	);
 };
 
 export default PinterestIcon;

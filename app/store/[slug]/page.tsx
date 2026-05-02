@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import StoreContent from "./StoreContent";
+import StoreContent from './StoreContent';
 
 export default function StorePage() {
-  return <StoreContent />;
+	return <StoreContent />;
 }

@@ -1,7 +1,7 @@
- "use client";
+'use client';
 
-import EventDetail from "./EventDetail";
+import EventDetail from './EventDetail';
 
 export default function SlugPage() {
-  return <EventDetail />;
+	return <EventDetail />;
 }

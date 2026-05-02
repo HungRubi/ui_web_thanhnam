@@ -3,6 +3,7 @@
 ## Cấu hình
 
 1. Tạo file `.env.local` trong thư mục root và thêm:
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:4000
 ```
@@ -22,77 +23,78 @@ NEXT_PUBLIC_API_URL=http://localhost:4000
 ### 1. Sử dụng hook `useGlobalConfig`
 
 ```tsx
-"use client";
+'use client';
 
-import { useGlobalConfig } from "@/hooks/useGlobalConfig";
+import { useGlobalConfig } from '@/hooks/useGlobalConfig';
 
 export default function MyComponent() {
-  const { data, loading, error, refetch } = useGlobalConfig();
+	const { data, loading, error, refetch } = useGlobalConfig();
 
-  if (loading) return <div>Đang tải...</div>;
-  if (error) return <div>Lỗi: {error}</div>;
-  if (!data) return null;
+	if (loading) return <div>Đang tải...</div>;
+	if (error) return <div>Lỗi: {error}</div>;
+	if (!data) return null;
 
-  return (
-    <div>
-      <h1>{data.name}</h1>
-      <p>{data.slogan}</p>
-      <button onClick={refetch}>Làm mới</button>
-    </div>
-  );
+	return (
+		<div>
+			<h1>{data.name}</h1>
+			<p>{data.slogan}</p>
+			<button onClick={refetch}>Làm mới</button>
+		</div>
+	);
 }
 ```
 
 ### 2. Sử dụng trực tiếp Redux hooks
 
 ```tsx
-"use client";
+'use client';
 
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { getGlobalConfig } from "@/store/globalConfigSlice";
-import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { getGlobalConfig } from '@/store/globalConfigSlice';
+import { useEffect } from 'react';
 
 export default function MyComponent() {
-  const dispatch = useAppDispatch();
-  const { data, loading, error } = useAppSelector((state) => state.globalConfig);
+	const dispatch = useAppDispatch();
+	const { data, loading, error } = useAppSelector(state => state.globalConfig);
 
-  useEffect(() => {
-    dispatch(getGlobalConfig());
-  }, [dispatch]);
+	useEffect(() => {
+		dispatch(getGlobalConfig());
+	}, [dispatch]);
 
-  // ... rest of component
+	// ... rest of component
 }
 ```
 
 ### 3. Sử dụng component có sẵn
 
 ```tsx
-import GlobalConfigDisplay from "@/components/GlobalConfigDisplay";
+import GlobalConfigDisplay from '@/components/GlobalConfigDisplay';
 
 export default function Page() {
-  return (
-    <div>
-      <GlobalConfigDisplay />
-    </div>
-  );
+	return (
+		<div>
+			<GlobalConfigDisplay />
+		</div>
+	);
 }
 ```
 
 ## API Response Format
 
 API trả về format:
+
 ```json
 {
-  "data": {
-    "name": "Thành Nam Store",
-    "logo": "...",
-    "slogan": "Uy tín tạo niềm tin",
-    "hotline": "...",
-    "phone": "...",
-    "email": "...",
-    "address": "...",
-    // ... các field khác
-  }
+	"data": {
+		"name": "Thành Nam Store",
+		"logo": "...",
+		"slogan": "Uy tín tạo niềm tin",
+		"hotline": "...",
+		"phone": "...",
+		"email": "...",
+		"address": "..."
+		// ... các field khác
+	}
 }
 ```
 
@@ -101,4 +103,3 @@ API trả về format:
 - Store đã được tích hợp vào `app/layout.tsx` qua `StoreProvider`
 - Tất cả component sử dụng Redux phải có `"use client"` directive
 - API URL có thể được cấu hình qua biến môi trường `NEXT_PUBLIC_API_URL`
-

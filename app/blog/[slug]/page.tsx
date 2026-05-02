@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import BlogDetail from "./BlogDetail";
+import BlogDetail from './BlogDetail';
 
 export default function DetailPage() {
-  return <BlogDetail />;
+	return <BlogDetail />;
 }
